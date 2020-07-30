@@ -5,6 +5,20 @@ function init() {
 
     draw([snake, food]);
     document.addEventListener('keydown', keysHandler)
+    placeFood()
+}
+
+// TODO: Interval must be irregular
+function placeFood() {
+    setInterval(() => {
+            let {snake, food} = getSnakeAndFood();
+            let newFoodPosition = {x: getRandomNumber(), y: getRandomNumber()};
+            draw([snake, {...food, position: newFoodPosition}]);
+        }, 5000)
+}
+
+function getRandomNumber(max = 25) {
+    return Math.floor(Math.random() * Math.floor(max)) * 16
 }
 
 function keysHandler({key}) {
@@ -78,5 +92,5 @@ function getSnakeAndFood() {
             dimensions: {w: 16, h: 16}
         }
     }
-    return  JSON.parse(localStorage.getItem('__app__store__') || {}) || appStoreInit;
+    return JSON.parse(localStorage.getItem('__app__store__') || JSON.stringify(appStoreInit));
 }
