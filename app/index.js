@@ -1,96 +1,34 @@
+import {store$} from "/store/index.js";
+import {getRandomNumber} from "./utils.js";
+
+let canvas = document.getElementById('canvas');
+let context = canvas.getContext('2d');
+
 init();
 
 function init() {
-    let {snake, food} = getSnakeAndFood();
+    store$.subscribe(drawGame)
+    // placeFood()
+}
 
-    draw([snake, food]);
-    document.addEventListener('keydown', keysHandler)
-    placeFood()
+function drawGame({snake, food, tile}) {
+    context.clearRect(0, 0, canvas.width, canvas.height);
+
+    context.fillStyle = snake.color;
+    snake.position.forEach(position => {
+        context.fillRect(position.x, position.y, tile, tile)
+    });
+
+    context.fillStyle = food.color;
+    context.fillRect(food.position.x, food.position.y, tile, tile)
 }
 
 // TODO: Interval must be irregular
 function placeFood() {
+    let random = 5000;
+
     setInterval(() => {
-            let {snake, food} = getSnakeAndFood();
-            let newFoodPosition = {x: getRandomNumber(), y: getRandomNumber()};
-            draw([snake, {...food, position: newFoodPosition}]);
-        }, 5000)
-}
-
-function getRandomNumber(max = 25) {
-    return Math.floor(Math.random() * Math.floor(max)) * 16
-}
-
-function keysHandler({key}) {
-    let keys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']
-    if (keys.includes(key)) {
-        moveSnake(key)
-    }
-}
-
-function moveSnake(key) {
-    const unit = 16;
-    let {snake, food} = getSnakeAndFood();
-
-    switch (key) {
-        case 'ArrowUp': {
-            let newPosition = {x: snake.position.x, y: snake.position.y - unit}
-            draw([{...snake, position: newPosition}, food])
-            break;
-        }
-        case 'ArrowDown': {
-            let newPosition = {x: snake.position.x, y: snake.position.y + unit}
-            draw([{...snake, position: newPosition}, food])
-            break;
-        }
-        case 'ArrowLeft': {
-            let newPosition = {x: snake.position.x - unit, y: snake.position.y}
-            draw([{...snake, position: newPosition}, food])
-            break;
-        }
-        case 'ArrowRight': {
-            let newPosition = {x: snake.position.x + unit, y: snake.position.y}
-            draw([{...snake, position: newPosition}, food])
-            break;
-        }
-    }
-}
-
-function draw(figures) {
-    let canvas = document.getElementById('canvas');
-    let context = canvas.getContext('2d');
-    context.clearRect(0, 0, canvas.width, canvas.height);
-
-    figures.forEach(figure => {
-        let {color, position, dimensions} = figure;
-
-        context.fillStyle = color;
-        context.fillRect(position.x, position.y, dimensions.w, dimensions.h)
-
-        save(figure);
-    });
-}
-
-function save(figure) {
-    let currentState = JSON.parse(localStorage.getItem('__app__store__') || '{}');
-    let newState = {...currentState, [figure.type]: figure}
-
-    localStorage.setItem('__app__store__', JSON.stringify(newState));
-}
-
-function getSnakeAndFood() {
-    let appStoreInit = {
-        snake: {
-            type: 'snake',
-            color: 'white', position: {x: 0, y: 0},
-            dimensions: {w: 16, h: 16}
-        },
-        food: {
-            type: 'food',
-            color: 'gray',
-            position: {x: 160, y: 160},
-            dimensions: {w: 16, h: 16}
-        }
-    }
-    return JSON.parse(localStorage.getItem('__app__store__') || JSON.stringify(appStoreInit));
+        let {food} = getSnakeAndFood();
+        let newFoodPosition = {x: getRandomNumber(), y: getRandomNumber()};
+    }, random)
 }
