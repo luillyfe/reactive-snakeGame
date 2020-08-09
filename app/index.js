@@ -1,5 +1,4 @@
-import {store$} from "/store/index.js";
-import {getRandomNumber} from "./utils.js";
+import {game$} from "/store/index.js";
 
 let canvas = document.getElementById('canvas');
 let context = canvas.getContext('2d');
@@ -7,8 +6,7 @@ let context = canvas.getContext('2d');
 init();
 
 function init() {
-    store$.subscribe(drawGame)
-    // placeFood()
+    game$.subscribe(drawGame)
 }
 
 function drawGame({snake, food, tile}) {
@@ -23,12 +21,3 @@ function drawGame({snake, food, tile}) {
     context.fillRect(food.position.x, food.position.y, tile, tile)
 }
 
-// TODO: Interval must be irregular
-function placeFood() {
-    let random = 5000;
-
-    setInterval(() => {
-        let {food} = getSnakeAndFood();
-        let newFoodPosition = {x: getRandomNumber(), y: getRandomNumber()};
-    }, random)
-}

@@ -1,3 +1,5 @@
+import {getRandomNumber} from "../utils.js";
+
 function Observable(subscribe) {
     this._subscribe = subscribe
 }
@@ -32,7 +34,18 @@ Observable.prototype = {
                 e => observer.onNext(e)
             )
         })
-    }
+    },
+    mergeMap: function (arrows$) {
+        let timeout$ = this;
+        return new Observable(observer => {
+            timeout$.subscribe(timeout => {
+                observer.onNext(timeout)
+            })
+            arrows$.subscribe(arrow => {
+                observer.onNext(arrow)
+            });
+        })
+    },
 }
 
 Observable.fromEvent = function (dom, eventName) {
@@ -46,6 +59,23 @@ Observable.fromEvent = function (dom, eventName) {
     })
 }
 
+
+Observable.fromTimeout = function (time = 5000) {
+    let timeout;
+    return new Observable(observer => {
+        let handler = e => {
+            observer.onNext(e)
+            time = getRandomNumber(10, 1000)
+            clearTimeout(timeout)
+            timeout = setTimeout(handler, time)
+        }
+        timeout = setTimeout(handler, time)
+
+        return () => {
+            clearTimeout(timeout);
+        }
+    })
+}
 
 export {
     Observable

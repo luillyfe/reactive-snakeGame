@@ -1,5 +1,5 @@
-function getRandomNumber(max = 25) {
-    return Math.floor(Math.random() * Math.floor(max)) * 16
+function getRandomNumber(max = 25, aux = 16) {
+    return Math.floor(Math.random() * Math.floor(max)) * aux
 }
 
 export {
