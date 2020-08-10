@@ -8,9 +8,9 @@ let snakeMoves$ = Observable.fromEvent(document, 'keydown')
     }).map(({key}) => {
         return key
     }).map(key => {
-        let {snake, food, path, tile} = getState();
+        let {snake, food, path, tile, user} = getState();
         snake = updateSnake({key, snake, tile, food, path});
-        save({snake, food, tile, path})
+        save({snake, food, tile, path, user: {...user, points: snake.units}})
         return {key, snake, food, tile}
     })
 
@@ -54,9 +54,9 @@ function updateSnake({key, snake, tile, food, path}) {
     return {...snake, position: path.slice(-snake.units)}
 }
 
-function save({snake, food, tile, path}) {
+function save({snake, food, tile, path, user}) {
     let currentState = JSON.parse(localStorage.getItem('__app__store__') || '{}');
-    let newState = {...currentState, snake, food, tile, path}
+    let newState = {...currentState, snake, food, tile, path, user}
 
     localStorage.setItem('__app__store__', JSON.stringify(newState));
 }
@@ -75,7 +75,10 @@ function getState() {
             position: {x: 160, y: 160}
         },
         tile: 16,
-        path: []
+        path: [],
+        user: {
+            points: 0
+        }
     }
     return JSON.parse(localStorage.getItem('__app__store__') || JSON.stringify(appStoreInit));
 }
