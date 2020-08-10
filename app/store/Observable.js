@@ -65,7 +65,7 @@ Observable.fromTimeout = function (time = 5000) {
     return new Observable(observer => {
         let handler = e => {
             observer.onNext(e)
-            time = getRandomNumber(10, 1000)
+            time = getRandomNumber(5, 1000, 5000)
             clearTimeout(timeout)
             timeout = setTimeout(handler, time)
         }

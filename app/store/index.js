@@ -2,7 +2,7 @@ import {Observable} from "./Observable.js";
 import {getRandomNumber} from "../utils.js";
 
 
-let store$ = Observable.fromEvent(document, 'keydown')
+let snakeMoves$ = Observable.fromEvent(document, 'keydown')
     .filter(({key}) => {
         return ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(key)
     }).map(({key}) => {
@@ -14,14 +14,14 @@ let store$ = Observable.fromEvent(document, 'keydown')
         return {key, snake, food, tile}
     })
 
-let timeout$ = Observable.fromTimeout(5000).map(() => {
+let placingFood$ = Observable.fromTimeout(5000).map(() => {
     let {snake, food, tile, path} = getState();
     let newFoodPosition = {x: getRandomNumber(), y: getRandomNumber()};
     save({snake, food: {...food, position: newFoodPosition}, tile, path})
     return {snake, food: {...food, position: newFoodPosition}, tile, path};
 })
 
-let game$ = timeout$.mergeMap(store$);
+let game$ = placingFood$.mergeMap(snakeMoves$);
 
 function updateSnake({key, snake, tile, food, path}) {
     const {x, y} = snake.position.pop()
