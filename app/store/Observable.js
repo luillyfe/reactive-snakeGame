@@ -8,7 +8,7 @@ Observable.prototype = {
     subscribe(onNext) {
         return this._subscribe({onNext})
     },
-    filter: function (filterFn) {
+    filter(filterFn) {
         let self = this;
 
         return new Observable(observer => {
@@ -17,7 +17,7 @@ Observable.prototype = {
             )
         })
     },
-    map: function (projectFn) {
+    map(projectFn) {
         let self = this;
 
         return new Observable(observer => {
@@ -26,7 +26,7 @@ Observable.prototype = {
             )
         })
     },
-    scan: function () {
+    scan() {
         let self = this;
 
         return new Observable(observer => {
@@ -35,17 +35,35 @@ Observable.prototype = {
             )
         })
     },
-    mergeMap: function (arrows$) {
+    mergeMap(arrows$) {
         let timeout$ = this;
         return new Observable(observer => {
-            timeout$.subscribe(timeout => {
+            let subscription1 = timeout$.subscribe(timeout => {
                 observer.onNext(timeout)
             })
-            arrows$.subscribe(arrow => {
+            let subscription2 = arrows$.subscribe(arrow => {
                 observer.onNext(arrow)
             });
+
+            return () => {
+                subscription1()
+                subscription2()
+            }
         })
     },
+    takeUntil(cancel$) {
+        let obs$ = this;
+        return new Observable(function (observer) {
+            let subscription1 = obs$.subscribe(e => {
+                observer.onNext(e)
+            })
+            let subscription2 = cancel$.subscribe(() => {
+                subscription1()
+                subscription2()
+            })
+            return subscription1;
+        })
+    }
 }
 
 Observable.fromEvent = function (dom, eventName) {
