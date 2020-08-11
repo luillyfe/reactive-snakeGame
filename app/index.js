@@ -8,7 +8,11 @@ initGame()
 
 function initGame() {
     game$
-        .subscribe(drawGame)
+        .subscribe(test)
+}
+
+function test(args) {
+    console.log(args);
 }
 
 function drawGame({snake, food, tile}) {
