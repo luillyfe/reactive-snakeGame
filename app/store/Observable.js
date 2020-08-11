@@ -26,12 +26,15 @@ Observable.prototype = {
             )
         })
     },
-    scan() {
+    scan(fn) {
         let self = this;
 
         return new Observable(observer => {
             return self.subscribe(
-                e => observer.onNext(e)
+                e => {
+                    fn()
+                    observer.onNext(e)
+                }
             )
         })
     },
@@ -57,7 +60,7 @@ Observable.prototype = {
             let subscription1 = obs$.subscribe(e => {
                 observer.onNext(e)
             })
-            let subscription2 = cancel$.subscribe(() => {
+            let subscription2 = cancel$.subscribe((e) => {
                 subscription1()
                 subscription2()
             })

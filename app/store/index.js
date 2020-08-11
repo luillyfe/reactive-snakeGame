@@ -1,6 +1,24 @@
 import {Observable} from "./Observable.js";
 import {getRandomNumber} from "../utils.js";
 
+let appStoreInit = {
+    snake: {
+        type: 'snake',
+        color: 'white',
+        position: [{x: 0, y: 0}],
+        units: 1
+    },
+    food: {
+        type: 'food',
+        color: 'gray',
+        position: {x: 160, y: 160}
+    },
+    tile: 16,
+    path: [],
+    user: {
+        points: 0
+    }
+}
 
 let snakeMoves$ = Observable.fromEvent(document, 'keydown')
     .filter(({key}) => {
@@ -22,7 +40,7 @@ let placingFood$ = Observable.fromTimeout(0).map(() => {
 })
 
 let cancelButton = document.getElementById('cancel')
-let cancel$ = Observable.fromEvent(cancelButton, 'click')
+let cancel$ = Observable.fromEvent(cancelButton, 'click');
 
 let game$ = placingFood$
     .mergeMap(snakeMoves$)
@@ -106,24 +124,6 @@ function save({snake, food, tile, path, user}) {
 }
 
 function getState() {
-    let appStoreInit = {
-        snake: {
-            type: 'snake',
-            color: 'white',
-            position: [{x: 0, y: 0}],
-            units: 1
-        },
-        food: {
-            type: 'food',
-            color: 'gray',
-            position: {x: 160, y: 160}
-        },
-        tile: 16,
-        path: [],
-        user: {
-            points: 0
-        }
-    }
     return JSON.parse(localStorage.getItem('__app__store__') || JSON.stringify(appStoreInit));
 }
 
