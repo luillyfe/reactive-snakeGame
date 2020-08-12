@@ -1,3 +1,5 @@
+import {getRandomNumber} from "../utils/helper.js";
+
 let initialState = {
     snake: {
         color: 'red',
@@ -8,7 +10,10 @@ let initialState = {
         position: [{x: 160, y: 160}]
     },
     path: [{x: 0, y: 0}],
-    tile: 16
+    tile: 16,
+    player: {
+        points: 0
+    }
 }
 
 function Store(state = initialState) {
@@ -25,12 +30,33 @@ Store.prototype = {
         }
         return initialState
     },
-    updateSnake(direction) {
-        let {snake, path, tile} = this._state
-        let position = this._updatePosition(snake.position, direction, tile, path)
-        this.save({...this._state, snake: {...snake, position } })
+    updateFood() {
+        let position = [{ x: getRandomNumber(0, 25) * 16, y: getRandomNumber(0, 25) * 16}]
+
+        this.save({
+            ...this._state,
+            food: { ...this._state.food, position }
+        })
     },
-    _updatePosition(position, direction, tile, path) {
+    updateSnake(direction) {
+        let {snake, food, tile, path, player} = this._state
+        let newPoints = player.points;
+
+        let newPosition = this._updatePosition(snake.position, direction, tile)
+        let shouldGrow = this._shouldGrow(newPosition, food.position[food.position.length - 1])
+
+        path.push(newPosition)
+        if (shouldGrow) {
+            newPoints += 1
+        }
+
+        this.save({
+            ...this._state,
+            snake: {...snake, position: path.slice(- (newPoints+1)) },
+            player: {...player, points: newPoints}
+        })
+    },
+    _updatePosition(position, direction, tile) {
         let {x, y} = position.pop()
         let newPosition;
 
@@ -53,8 +79,12 @@ Store.prototype = {
             }
         }
 
-        path.push(newPosition)
-        return [newPosition]
+        return newPosition
+    },
+    _shouldGrow(snakePosition, foodPosition) {
+        return (
+            snakePosition.x === foodPosition.x &&
+            snakePosition.y === foodPosition.y)
     }
 
 }

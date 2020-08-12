@@ -14,7 +14,15 @@ let arrowKeys$ = Observable.fromEvent(document, 'keydown')
         return {snake, food, tile}
     })
 
-let game$ = arrowKeys$
+let placingFood$ = Observable.irregularIntervals().scan(() => {
+        store.updateFood()
+    }).map(() => {
+        let {snake, food, tile} = store.getState();
+        return {snake, food, tile}
+    });
+
+let game$ = placingFood$.mergeMap(arrowKeys$)
+
 export {
     game$
 }
