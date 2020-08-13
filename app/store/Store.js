@@ -44,8 +44,15 @@ Store.prototype = {
 
         let newPosition = this._updatePosition(snake.position, direction, tile)
         let shouldGrow = this._shouldGrow(newPosition, food.position[food.position.length - 1])
+        let hittedAboundary = this._hittedAboundary(newPosition);
 
-        path.push(newPosition)
+        if (hittedAboundary) {
+            newPosition = this._changeDirection(snake.position, direction, tile)
+            path.push(...newPosition)
+        } else {
+            path.push(newPosition)
+        }
+
         if (shouldGrow) {
             newPoints += 1
         }
@@ -57,7 +64,7 @@ Store.prototype = {
         })
     },
     _updatePosition(position, direction, tile) {
-        let {x, y} = position.pop()
+        let {x, y} = [...position].pop()
         let newPosition;
 
         switch (direction) {
@@ -85,6 +92,56 @@ Store.prototype = {
         return (
             snakePosition.x === foodPosition.x &&
             snakePosition.y === foodPosition.y)
+    },
+    _hittedAboundary({x, y}) {
+        return (
+            x >= 400 || x < 0 || y >= 400 || y < 0
+        )
+    },
+    _changeDirection(position, direction, tile) {
+        switch (direction) {
+            case 'ArrowDown': {
+                let mapped = position.map(({x, y}, index) => {
+                    if (index === position.length - 1) {
+                        return {x: x - tile, y: y - tile}
+                    } else if(index === position.length - 2) {
+                        return {x: x - tile, y: y + tile}
+                    }
+                    return {x, y: y + (tile * 2)}
+                })
+                return mapped
+            }
+            case 'ArrowUp': {
+                return  position.map(({x, y}, index) => {
+                    if (index === position.length - 1) {
+                        return {x: x + tile, y: y + tile}
+                    } else if(index === position.length - 2) {
+                        return {x: x + tile, y: y - tile}
+                    }
+                    return {x, y: y - (tile * 2) }
+                })
+            }
+            case 'ArrowLeft': {
+                return position.map(({x, y}, index) => {
+                    if (index === position.length - 1) {
+                        return {x: x + tile, y: y - tile}
+                    } else if(index === position.length - 2) {
+                        return {x: x - tile, y: y - tile}
+                    }
+                    return {x: x - (tile * 2), y}
+                })
+            }
+            case 'ArrowRight': {
+                return position.map(({x, y}, index) => {
+                    if (index === position.length - 1) {
+                        return {x: x - tile, y: y + tile}
+                    } else if(index === position.length - 2) {
+                        return {x: x + tile, y: y + tile}
+                    }
+                    return {x: x + (tile * 2), y}
+                })
+            }
+        }
     }
 
 }
