@@ -40,21 +40,19 @@ Store.prototype = {
     },
     updateSnake(direction) {
         let {snake, food, tile, path, player} = this._state
-        let newPoints = player.points;
 
         let newPosition = this._updatePosition(snake.position, direction, tile)
-        let shouldGrow = this._shouldGrow(newPosition, food.position[food.position.length - 1])
         let hittedAboundary = this._hittedAboundary(newPosition);
+
+        let newPoints =
+            this._shouldGrow(newPosition, food.position[food.position.length - 1]) ?
+                player.points + 1 : player.points
 
         if (hittedAboundary) {
             newPosition = this._changeDirection(snake.position, direction, tile)
             path.push(...newPosition)
         } else {
             path.push(newPosition)
-        }
-
-        if (shouldGrow) {
-            newPoints += 1
         }
 
         this.save({
@@ -101,7 +99,7 @@ Store.prototype = {
     _changeDirection(position, direction, tile) {
         switch (direction) {
             case 'ArrowDown': {
-                let mapped = position.map(({x, y}, index) => {
+                return position.map(({x, y}, index) => {
                     if (index === position.length - 1) {
                         return {x: x - tile, y: y - tile}
                     } else if(index === position.length - 2) {
@@ -109,7 +107,6 @@ Store.prototype = {
                     }
                     return {x, y: y + (tile * 2)}
                 })
-                return mapped
             }
             case 'ArrowUp': {
                 return  position.map(({x, y}, index) => {

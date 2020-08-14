@@ -5,14 +5,13 @@ let context = canvas.getContext('2d')
 
 initGame()
 
-
 function initGame() {
     game$
         .subscribe(drawGame)
 }
 
 function drawGame({snake, food, tile}) {
-    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.clearRect(0, 0, canvas.width, canvas.height)
     draw(snake.color, snake.position, tile)
     draw(food.color, food.position, tile)
 }

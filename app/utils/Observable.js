@@ -43,20 +43,25 @@ Observable.prototype = {
             })
         })
     },
-    mergeMap(outer$) {
-        let inner$ = this
+    switchLatest(outer$) {
+        let self$ = this
         return new Observable(observer => {
-            const subs1 = inner$.subscribe(ev => observer.next(ev))
-            const subs2 = outer$.subscribe(ev => observer.next(ev))
+            let retry = false
+            let currentSub = null
+            return self$.subscribe(() => {
+                retry = !retry
+                currentSub = outer$.subscribe(ev => {
+                    if (retry) {
+                        observer.next(ev)
+                    } else {
+                        currentSub.unsubscribe()
+                    }
+                })
+                return currentSub;
+            })
+        })
+    }
 
-            return {
-                unsubscribe() {
-                    subs1.unsubscribe()
-                    subs2.unsubscribe()
-                }
-            }
-        });
-    },
 }
 
 Observable.fromEvent = function (dom, eventName) {
@@ -80,6 +85,7 @@ Observable.irregularIntervals = function (time = 0) {
             clearTimeout(timeout)
             timeout = setTimeout(handler, getRandomNumber(4, 10) * 1000)
         }
+
         timeout = setTimeout(handler, time)
 
         return {
@@ -88,6 +94,20 @@ Observable.irregularIntervals = function (time = 0) {
             }
         }
     })
+}
+
+Observable.mergeAll = function (...observables) {
+    return new Observable(observer => {
+        let subs = observables.map(obs$ => {
+            return obs$.subscribe(ev => observer.next(ev))
+        })
+
+        return {
+            unsubscribe() {
+                subs.forEach(sub => sub.unsubscribe())
+            }
+        }
+    });
 }
 
 export {

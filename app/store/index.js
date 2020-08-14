@@ -3,6 +3,7 @@ import {Store} from "./Store.js";
 
 let keys = ['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight'];
 let store = new Store()
+let button = document.getElementById('button')
 
 let arrowKeys$ = Observable.fromEvent(document, 'keydown')
     .filter(({key}) => keys.includes(key))
@@ -16,11 +17,20 @@ let placingFood$ = Observable.irregularIntervals()
         store.updateFood()
     })
 
-let game$ = placingFood$.mergeMap(arrowKeys$)
+let moves$ = Observable.mergeAll(placingFood$, arrowKeys$)
     .map(() => {
         let {snake, food, tile} = store.getState();
         return {snake, food, tile}
     })
+
+let start$ = Observable.fromEvent(button, 'click')
+    .scan(() => {
+        button.innerHTML = (button.innerHTML === 'Start') ? 'Stop' : 'Start'
+    });
+
+let game$ = start$
+    .switchLatest(moves$)
+
 
 export {
     game$
