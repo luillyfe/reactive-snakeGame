@@ -7,9 +7,7 @@ let button = document.getElementById('button')
 
 let arrowKeys$ = Observable.fromEvent(document, 'keydown')
     .filter(({key}) => keys.includes(key))
-    .scan(({key}) => {
-        store.updateSnake(key)
-    })
+    .scan(({key}) => store.updateSnake(key))
 
 
 let placingFood$ = Observable.irregularIntervals()
@@ -22,11 +20,14 @@ let moves$ = Observable.mergeAll(placingFood$, arrowKeys$)
         let {snake, food, tile} = store.getState();
         return {snake, food, tile}
     })
+    .catch(e => {
+        button.innerHTML = 'Start'
+    })
 
 let start$ = Observable.fromEvent(button, 'click')
     .scan(() => {
         button.innerHTML = (button.innerHTML === 'Start') ? 'Stop' : 'Start'
-    });
+    })
 
 let game$ = start$
     .switchLatest(moves$)

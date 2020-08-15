@@ -7,7 +7,10 @@ initGame()
 
 function initGame() {
     game$
-        .subscribe(drawGame)
+        .subscribe({
+            next: drawGame,
+            error: console.log
+        })
 }
 
 function drawGame({snake, food, tile}) {

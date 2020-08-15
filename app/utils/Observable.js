@@ -10,6 +10,8 @@ Observable.prototype = {
             var observer = {
                 next: obs
             }
+        } else {
+            var observer = obs
         }
 
         return this._subscribe({
@@ -21,52 +23,82 @@ Observable.prototype = {
     filter(filterFn) {
         let self$ = this;
         return new Observable(observer => {
-            return self$.subscribe(ev => {
-                if (filterFn(ev)) {
-                    observer.next(ev)
-                }
+            return self$.subscribe({
+                next: ev => {
+                    if (filterFn(ev)) {
+                        observer.next(ev)
+                    }
+                }, error: observer.error
             })
         })
     },
     map(projectionFn) {
         let self$ = this;
         return new Observable(observer => {
-            return self$.subscribe(ev => observer.next(projectionFn(ev)))
+            return self$.subscribe({
+                next: ev =>
+                    observer.next(projectionFn(ev)),
+                error: observer.error
+            })
         })
     },
     scan(sideEffect) {
         let self$ = this;
         return new Observable(observer => {
-            return self$.subscribe(ev => {
-                sideEffect(ev)
-                observer.next(ev)
+            return self$.subscribe({
+                next: ev => {
+                    sideEffect(ev)
+                    observer.next(ev)
+                }, error: observer.error
             })
         })
     },
-    switchLatest(outer$) {
-        let self$ = this
+    switchLatest(inner$) {
+        let outer$ = this
         return new Observable(observer => {
             let retry = false
             let currentSub = null
-            return self$.subscribe(() => {
+            return outer$.subscribe(() => {
                 retry = !retry
-                currentSub = outer$.subscribe(ev => {
-                    if (retry) {
-                        observer.next(ev)
-                    } else {
-                        currentSub.unsubscribe()
-                    }
+                currentSub = inner$.subscribe({
+                    next: ev => {
+                        if (retry) {
+                            observer.next(ev)
+                        } else {
+                            currentSub.unsubscribe()
+                        }
+                    }, error: observer.error
                 })
                 return currentSub;
             })
         })
+    },
+    catch(errorFn) {
+        let self$ = this
+        return new Observable(observer => {
+            let subs = self$.subscribe({
+                next: (ev) => {
+                        observer.next(ev)
+                }, error: e => {
+                    errorFn(e)
+                    observer.error(e)
+                    subs.unsubscribe()
+                }
+            })
+            return subs
+        })
     }
-
 }
 
 Observable.fromEvent = function (dom, eventName) {
     return new Observable(observer => {
-        const handler = ev => observer.next(ev)
+        const handler = ev => {
+            try {
+                observer.next(ev)
+            } catch (e) {
+                observer.error(e)
+            }
+        }
         dom.addEventListener(eventName, handler)
 
         return {
@@ -99,7 +131,10 @@ Observable.irregularIntervals = function (time = 0) {
 Observable.mergeAll = function (...observables) {
     return new Observable(observer => {
         let subs = observables.map(obs$ => {
-            return obs$.subscribe(ev => observer.next(ev))
+            return obs$.subscribe({
+                next: ev => observer.next(ev)
+                , error: observer.error
+            })
         })
 
         return {

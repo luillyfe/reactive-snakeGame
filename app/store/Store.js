@@ -38,11 +38,19 @@ Store.prototype = {
             food: { ...this._state.food, position }
         })
     },
+    snakeHistItself(newPosition, currentPosition) {
+        return currentPosition
+            .filter(({x, y}) => x === newPosition.x && y === newPosition.y).length
+    },
     updateSnake(direction) {
         let {snake, food, tile, path, player} = this._state
 
         let newPosition = this._updatePosition(snake.position, direction, tile)
         let hittedAboundary = this._hittedAboundary(newPosition);
+
+        if (this.snakeHistItself(newPosition, snake.position)) {
+            throw new Error('snake hits itself');
+        }
 
         let newPoints =
             this._shouldGrow(newPosition, food.position[food.position.length - 1]) ?
