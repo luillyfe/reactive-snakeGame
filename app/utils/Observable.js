@@ -42,7 +42,7 @@ Observable.prototype = {
             })
         })
     },
-    scan(sideEffect) {
+    do(sideEffect) {
         let self$ = this;
         return new Observable(observer => {
             return self$.subscribe({
@@ -56,36 +56,45 @@ Observable.prototype = {
     switchLatest(inner$) {
         let outer$ = this
         return new Observable(observer => {
-            let retry = false
             let currentSub = null
-            return outer$.subscribe(() => {
-                retry = !retry
+            outer$.subscribe(() => {
                 currentSub = inner$.subscribe({
                     next: ev => {
-                        if (retry) {
-                            observer.next(ev)
-                        } else {
-                            currentSub.unsubscribe()
-                        }
-                    }, error: observer.error
+                        observer.next(ev)
+                    },
+                    error: (ev) => {
+                        observer.error(ev)
+                        currentSub.unsubscribe()
+                    },
+                    complete: () => {
+                        observer.complete()
+                        currentSub.unsubscribe()
+                    }
                 })
-                return currentSub;
+
             })
+
+            return {
+                unsubscribe() {
+                    currentSub.unsubscribe()
+                }
+            }
         })
     },
     catch(errorFn) {
-        let self$ = this
+        let self$ = this;
         return new Observable(observer => {
-            let subs = self$.subscribe({
-                next: (ev) => {
+            let sub = self$.subscribe({
+                next: ev => {
                         observer.next(ev)
-                }, error: e => {
+                },
+                error: e => {
                     errorFn(e)
                     observer.error(e)
-                    subs.unsubscribe()
+                    sub.unsubscribe()
                 }
             })
-            return subs
+            return sub
         })
     }
 }
@@ -122,7 +131,9 @@ Observable.irregularIntervals = function (time = 0) {
 
         return {
             unsubscribe() {
-                clearTimeout(timeout)
+                for (let i=1; i<= timeout +1; i++) {
+                    clearTimeout(i)
+                }
             }
         }
     })
@@ -132,8 +143,17 @@ Observable.mergeAll = function (...observables) {
     return new Observable(observer => {
         let subs = observables.map(obs$ => {
             return obs$.subscribe({
-                next: ev => observer.next(ev)
-                , error: observer.error
+                next: ev => {
+                    observer.next(ev)
+                },
+                error: (e) => {
+                    subs.forEach(sub => sub.unsubscribe())
+                    observer.error(e)
+                },
+                complete: () => {
+                    subs.forEach(sub => sub.unsubscribe())
+                    observer.complete()
+                }
             })
         })
 

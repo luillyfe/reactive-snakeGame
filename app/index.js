@@ -1,4 +1,4 @@
-import { game$ } from '/store/index.js'
+import {moves$, start$} from '/store/index.js'
 
 let canvas = document.getElementById('canvas')
 let context = canvas.getContext('2d')
@@ -6,11 +6,26 @@ let context = canvas.getContext('2d')
 initGame()
 
 function initGame() {
-    game$
-        .subscribe({
-            next: drawGame,
-            error: console.log
-        })
+    let retry = false, currentSub;
+
+
+    start$.subscribe({
+        next: () => {
+            retry = !retry
+            if (retry) {
+                currentSub = moves$.subscribe({
+                    next: (ev) => {
+                        drawGame(ev)
+                    }, error: e => {
+                        retry = false
+                        console.error(e)
+                    }
+                })
+            } else {
+                currentSub.unsubscribe()
+            }
+        }
+    })
 }
 
 function drawGame({snake, food, tile}) {
