@@ -31,12 +31,17 @@ function getInitialState() {
     const player = {
         points: 0
     }
+    const area = {
+        width: 400,
+        height: 400
+    }
 
     return {
         snake,
         food,
         tile,
         path,
-        player
+        player,
+        area
     }
 }
