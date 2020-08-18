@@ -32,3 +32,18 @@ export const doAction = fn =>
                 complete: () => observer.complete()
             })
         })
+
+export const catchError = fn =>
+    source =>
+        new Observable(observer => {
+            source.subscribe({
+                next: ev => {
+                    observer.next(ev)
+                },
+                error: e => {
+                    fn(e)
+                    observer.error(e)
+                },
+                complete: () => observer.complete()
+            })
+        })

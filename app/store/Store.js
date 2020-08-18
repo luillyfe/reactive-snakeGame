@@ -8,6 +8,10 @@ export class Store {
         this.state = {...this.state, ...newState}
     }
 
+    resetStore() {
+        this.state = getInitialState()
+    }
+
     getState() {
         return this.state
     }

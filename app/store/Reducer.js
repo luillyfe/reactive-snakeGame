@@ -1,12 +1,44 @@
-import {getRandomNumber} from "../utils/helpers.js";
+import {getRandomTile} from "../utils/helpers.js";
 
 export function snakeReducer(direction) {
-    return ({ snake, path, tile, ...currentState }) => {
-        const position = updateSnakePosition([...snake.position], direction, tile)
-        const newPath = [...path, position]
+    return ({snake, path, tile, player, food}) => {
+        const newPosition = updateSnakePosition([...snake.position], direction, tile)
 
-        return {...currentState, snake: {...snake, position: [position]}, path: newPath}
+        if (hitsItself(newPosition, snake.position)) {
+            throw new Error('Snake hits itself')
+        }
+
+        const newPath = [...path, newPosition]
+        const newPoints = hasEatenFood(newPosition, food.position) ? player.points + 1 : player.points
+
+        return {
+            food,
+            snake: {
+                ...snake,
+                position: newPath.slice(-(newPoints + 1))
+            },
+            path: newPath,
+            tile,
+            player: {
+                ...player,
+                points: newPoints
+            }
+        }
     }
+}
+
+function hitsItself(newPosition, currentPosition) {
+    return currentPosition
+        .filter(({x, y}) => newPosition.x === x && newPosition.y === y)
+        .length
+}
+
+function hasEatenFood(snakePosition, foodPosition) {
+    const {x, y} = foodPosition[0]
+    return (
+        snakePosition.x === x &&
+        snakePosition.y === y
+    )
 }
 
 function updateSnakePosition(currentPosition, direction, tile) {
@@ -36,9 +68,9 @@ function updateSnakePosition(currentPosition, direction, tile) {
 }
 
 export function foodReducer() {
-    return ({food, ...currentState}) => {
-        const position = [{x: getRandomNumber(0, 25) * 16, y: getRandomNumber(0, 25) * 16 }]
+    return ({food, tile, ...currentState}) => {
+        const position = [getRandomTile(tile)]
 
-        return {...currentState, food: {...food, position}}
+        return {...currentState, tile, food: {...food, position}}
     }
 }

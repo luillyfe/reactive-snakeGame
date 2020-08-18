@@ -1,4 +1,4 @@
-import { Observable, map, doAction, filter } from '../utils/index.js'
+import { Observable, map, doAction, filter, catchError } from '../utils/index.js'
 import { Store } from './Store.js'
 import { foodReducer, snakeReducer } from './Reducer.js'
 
@@ -12,7 +12,10 @@ const placingFood$ = Observable.irregularIntervals(0, 4, 10)
 const moves$ = Observable.fromEvent(document, 'keydown')
     .pipe(
         filter(({key}) => allowedKeys.includes(key)),
-        doAction(({key}) => store.updateState(snakeReducer(key)))
+        doAction(({key}) => store.updateState(snakeReducer(key))),
+        catchError(() => {
+            store.resetStore()
+        })
     )
 const game$ = Observable.mergeAll(moves$, placingFood$)
     .pipe(map(() => {
