@@ -63,14 +63,23 @@ export class Observable {
     static mergeAll(...observables) {
         return new Observable(observer => {
             const subscriptions = observables.map(observable$ => {
-                return observable$.subscribe(observer)
+                return observable$.subscribe({
+                    next: observer.next,
+                    error: e => {
+                        observer.error(e)
+                        unsubscribe()
+                    },
+                    complete: observer.complete
+                })
             })
 
+            function unsubscribe() {
+                subscriptions
+                    .forEach(({unsubscribe}) => unsubscribe())
+            }
+
             return {
-                unsubscribe() {
-                    subscriptions
-                        .forEach(({unsubscribe}) => unsubscribe())
-                }
+                unsubscribe
             }
         })
     }

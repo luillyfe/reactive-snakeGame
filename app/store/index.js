@@ -15,6 +15,7 @@ const moves$ = Observable.fromEvent(document, 'keydown')
         doAction(({key}) => store.updateState(snakeReducer(key))),
         catchError(() => {
             store.resetStore()
+            return store.getState()
         })
     )
 const game$ = Observable.mergeAll(moves$, placingFood$)

@@ -3,7 +3,7 @@ import {Observable} from "./Observable.js";
 export const map = fn =>
     source =>
         new Observable(observer => {
-            source.subscribe({
+            return source.subscribe({
                 next: ev => observer.next(fn(ev)),
                 error: e => observer.error(e),
                 complete: () => observer.complete()
@@ -13,7 +13,7 @@ export const map = fn =>
 export const filter = fn =>
     source =>
         new Observable(observer => {
-            source.subscribe({
+            return source.subscribe({
                 next: ev => fn(ev) && observer.next(ev),
                 error: e => observer.error(e),
                 complete: () => observer.complete()
@@ -23,7 +23,7 @@ export const filter = fn =>
 export const doAction = fn =>
     source =>
         new Observable(observer => {
-            source.subscribe({
+            return source.subscribe({
                 next: ev => {
                     fn(ev)
                     observer.next(ev)
@@ -36,12 +36,12 @@ export const doAction = fn =>
 export const catchError = fn =>
     source =>
         new Observable(observer => {
-            source.subscribe({
+            return source.subscribe({
                 next: ev => {
                     observer.next(ev)
                 },
                 error: e => {
-                    fn(e)
+                    observer.next(fn(e))
                     observer.error(e)
                 },
                 complete: () => observer.complete()
