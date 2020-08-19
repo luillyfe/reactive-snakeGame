@@ -129,9 +129,9 @@ function updateSnakePosition(currentPosition, direction, tile) {
 }
 
 export function foodReducer() {
-    return ({food, tile, ...currentState}) => {
-        const position = [getRandomTile(tile)]
+    return ({food, tile, area, ...currentState}) => {
+        const position = [getRandomTile(tile, area.width / tile)]
 
-        return {...currentState, tile, food: {...food, position}}
+        return {...currentState, tile, area, food: {...food, position}}
     }
 }
