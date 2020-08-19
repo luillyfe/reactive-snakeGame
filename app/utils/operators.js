@@ -41,7 +41,53 @@ export const catchError = fn =>
                     observer.next(ev)
                 },
                 error: e => {
-                    observer.next(fn(e))
+                    const lastState = fn(e)
+                    if (lastState) observer.next(lastState)
+                    observer.error(e)
+                },
+                complete: () => observer.complete()
+            })
+        })
+
+export const scan = (fn, initValue) =>
+    source =>
+        new Observable(observer => {
+            let acc = initValue;
+            return source.subscribe({
+                next: ev => {
+                    acc = fn(acc, ev)
+                    observer.next(acc)
+                },
+                error: e => {
+                    observer.error(e)
+                },
+                complete: () => observer.complete()
+            })
+        })
+
+
+export const combineToLatestIf = fn =>
+    source =>
+        new Observable(observer => {
+            let subscription, condition = false;
+            return source.subscribe({
+                next: () => {
+                    condition = !condition
+                    if (condition) {
+                        subscription = fn().subscribe({
+                            next: observer.next,
+                            error: e => {
+                                condition = false
+                                observer.error(e)
+                                subscription.unsubscribe()
+                            },
+                            complete: observer.complete,
+                        })
+                    } else {
+                        subscription.unsubscribe()
+                    }
+                },
+                error: e => {
                     observer.error(e)
                 },
                 complete: () => observer.complete()
