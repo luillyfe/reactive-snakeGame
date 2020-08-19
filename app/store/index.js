@@ -1,4 +1,4 @@
-import { Observable, map, doAction, filter, catchError } from '../utils/index.js'
+import { Observable, map, tap, filter, catchError } from '../utils/index.js'
 import { Store } from './Store.js'
 import { foodReducer, snakeReducer } from './Reducer.js'
 
@@ -7,12 +7,12 @@ const allowedKeys = ['ArrowLeft', 'ArrowUp', 'ArrowDown', 'ArrowRight']
 
 const placingFood$ = Observable.irregularIntervals(0, 4, 10)
     .pipe(
-        doAction(() => store.updateState(foodReducer()))
+        tap(() => store.updateState(foodReducer()))
     )
 const moves$ = Observable.fromEvent(document, 'keydown')
     .pipe(
         filter(({key}) => allowedKeys.includes(key)),
-        doAction(({key}) => store.updateState(snakeReducer(key))),
+        tap(({key}) => store.updateState(snakeReducer(key))),
         catchError(() => {
             store.resetStore()
             return store.getState()

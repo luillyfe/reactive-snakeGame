@@ -1,10 +1,12 @@
 import { Observable } from './Observable.js'
-import { map, doAction, filter, catchError } from './operators.js'
+import { map, tap, filter, catchError, scan, combineToLatestIf } from './operators.js'
 
 export {
     Observable,
     map,
-    doAction,
+    tap,
     filter,
-    catchError
+    catchError,
+    scan,
+    combineToLatestIf,
 }

@@ -20,7 +20,7 @@ export const filter = fn =>
             })
         })
 
-export const doAction = fn =>
+export const tap = fn =>
     source =>
         new Observable(observer => {
             return source.subscribe({
