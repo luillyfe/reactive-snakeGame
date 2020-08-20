@@ -1,3 +1,5 @@
+import {getSnakeColor} from "../utils/helpers.js";
+
 export class Store {
     constructor(initState = getInitialState()) {
         this.state = initState
@@ -20,7 +22,7 @@ export class Store {
 function getInitialState() {
     const path = [{x: 0, y: 0}]
     const snake = {
-        color: '#a98963',
+        color: getSnakeColor(),
         position: path
     }
     const food = {

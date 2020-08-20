@@ -74,7 +74,7 @@ export const combineToLatestIf = fn =>
                 next: () => {
                     condition = !condition
                     if (condition) {
-                        subscription = fn().subscribe({
+                        subscription = fn(condition).subscribe({
                             next: observer.next,
                             error: e => {
                                 condition = false
@@ -84,6 +84,7 @@ export const combineToLatestIf = fn =>
                             complete: observer.complete,
                         })
                     } else {
+                        fn(condition)
                         subscription.unsubscribe()
                     }
                 },
