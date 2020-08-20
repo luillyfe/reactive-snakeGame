@@ -13,10 +13,12 @@ function start() {
         combineToLatestIf((shouldSubscribe) => {
             if (shouldSubscribe) {
                 button.innerText = 'Stop'
+                return game$;
             } else {
                 tearDown()
+                let {snake, area, food, tile} = store.getState()
+                return Observable.of({snake, area, food, tile});
             }
-            return game$;
         }),
         catchError(error => {
             tearDown()

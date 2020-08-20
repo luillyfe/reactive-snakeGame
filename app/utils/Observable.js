@@ -83,6 +83,17 @@ export class Observable {
             }
         })
     }
+
+    static of(values) {
+        return new Observable(observer => {
+            observer.next(values)
+            observer.complete()
+
+            return {
+                unsubscribe() {}
+            }
+        })
+    }
 }
 
 function pipe(...fns) {

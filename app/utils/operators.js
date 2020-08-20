@@ -85,6 +85,7 @@ export const combineToLatestIf = fn =>
                         })
                     } else {
                         fn(condition)
+                            .subscribe(observer)
                         subscription.unsubscribe()
                     }
                 },
