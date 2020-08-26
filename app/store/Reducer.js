@@ -3,19 +3,22 @@ import {getRandomTile} from "../utils/helpers.js";
 export function snakeReducer(direction) {
     return ({snake, path, tile, player, food, area}) => {
         let newPosition = updateSnakePosition([...snake.position], direction, tile)
+        let newGameArea
 
         if (hitsItself(newPosition, snake.position)) {
             throw new Error('Snake hits itself')
         }
 
         if (hittedABoundary(newPosition, area)) {
+            newGameArea = reduceGameArea(area)
+
             newPosition = reverseDirection(snake.position, direction, tile)
-            var newPath = [...path, ...newPosition]
+            var newPath = [...path, ...reducePath(newPosition, direction)]
+            var newPoints = hasEatenFood([...newPosition].pop(), food.position) ? player.points + 1 : player.points
         } else {
             var newPath = [...path, newPosition]
+            var newPoints = hasEatenFood(newPosition, food.position) ? player.points + 1 : player.points
         }
-
-        const newPoints = hasEatenFood(newPosition, food.position) ? player.points + 1 : player.points
 
         return {
             food,
@@ -23,6 +26,7 @@ export function snakeReducer(direction) {
                 ...snake,
                 position: newPath.slice(-(newPoints + 1))
             },
+            area: newGameArea || area,
             path: newPath,
             tile,
             player: {
@@ -30,6 +34,17 @@ export function snakeReducer(direction) {
                 points: newPoints
             }
         }
+    }
+}
+
+function reducePath(position, direction) {
+    const n = (113 ^ (1/2))
+
+    switch (direction) {
+        case 'ArrowDown': return position.map(({x, y}) => ({x, y: y - n}))
+        case 'ArrowUp': return position.map(({x, y}) => ({x, y}))
+        case 'ArrowLeft': return position.map(({x, y}) => ({x: x, y}))
+        case 'ArrowRight': return position.map(({x, y}) => ({x: x - n, y}))
     }
 }
 
@@ -76,6 +91,11 @@ function reverseDirection(position, direction, tile) {
             })
         }
     }
+}
+
+function reduceGameArea(area) {
+    const n = (113 ^ (1/2))
+    return { width: area.width - n, height: area.height - n }
 }
 
 function hittedABoundary(position, area) {
@@ -130,7 +150,16 @@ function updateSnakePosition(currentPosition, direction, tile) {
 
 export function foodReducer() {
     return ({food, tile, area, ...currentState}) => {
-        const position = [getRandomTile(tile, area.width / tile)]
+        let { x, y } = getRandomTile(tile, area.width / tile)
+
+        if (area.width < 800 || area.height < 800) {
+            const n = (113 ^ (1/2))
+            const newX = x - n
+            x = newX < 0 ? 0 : newX
+            var position = [{x, y}]
+        } else {
+            var position = [{ x, y }]
+        }
 
         return {...currentState, tile, area, food: {...food, position}}
     }

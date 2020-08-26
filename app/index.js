@@ -50,6 +50,9 @@ function drawGame({snake, food, tile, area}) {
     const canvas = document.getElementById('canvas')
     const context = canvas.getContext('2d')
 
+    canvas.width = area.width
+    canvas.height = area.height
+
     context.clearRect(0, 0, area.width, area.height)
     draw(snake, tile, context)
     draw(food, tile, context)
