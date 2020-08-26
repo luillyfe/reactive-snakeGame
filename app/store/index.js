@@ -1,6 +1,7 @@
-import { Observable, map, tap, filter } from '../utils/index.js'
-import { Store } from './Store.js'
-import { foodReducer, snakeReducer } from './Reducer.js'
+import {map, tap, filter} from '../utils/operators.js'
+import {Observable} from '../utils/Observable.js'
+import {Store} from './Store.js'
+import {foodReducer, snakeReducer} from './Reducer.js'
 
 const store = new Store()
 const allowedKeys = ['ArrowLeft', 'ArrowUp', 'ArrowDown', 'ArrowRight']

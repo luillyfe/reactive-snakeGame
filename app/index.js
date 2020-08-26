@@ -1,5 +1,6 @@
 import {game$, store} from './store/index.js'
-import {scan, combineToLatestIf, Observable, catchError} from "./utils/index.js";
+import { Observable } from "./utils/Observable.js";
+import {scan, combineToLatestIf, catchError} from "./utils/operators.js";
 import {setItems, getItems} from "./utils/helpers.js";
 
 start()
@@ -31,21 +32,6 @@ function start() {
 
 }
 
-function tearDown() {
-    button.innerText = 'Start again'
-
-    const {player} = store.getState()
-    store.resetStore()
-
-    const {score: lastScore, previousSnakeColor} = getItems()
-
-    setItems({
-        score: player.points,
-        resetSnakeColor: player.points > lastScore,
-        previousSnakeColor
-    })
-}
-
 function drawGame({snake, food, tile, area}) {
     const canvas = document.getElementById('canvas')
     const context = canvas.getContext('2d')
@@ -62,5 +48,20 @@ function draw({position, color}, tile, context) {
     context.fillStyle = color
     position.forEach(({x, y}) => {
         context.fillRect(x, y, tile, tile)
+    })
+}
+
+function tearDown() {
+    button.innerText = 'Start again'
+
+    const {player} = store.getState()
+    store.resetStore()
+
+    const {score: lastScore, previousSnakeColor} = getItems()
+
+    setItems({
+        score: player.points,
+        resetSnakeColor: player.points > lastScore,
+        previousSnakeColor
     })
 }
