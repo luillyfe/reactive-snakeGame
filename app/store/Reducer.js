@@ -1,7 +1,7 @@
 import {getRandomTile, getRandomColor} from "../utils/helpers.js";
 
 export function snakeReducer(direction) {
-    return ({snake, path, tile, player, food, area}) => {
+    return ({snake, path, tile, food, area}) => {
         let newPosition = updateSnakePosition([...snake.position], direction, tile)
         let newGameArea
 
@@ -14,25 +14,42 @@ export function snakeReducer(direction) {
 
             newPosition = reverseDirection(snake.position, direction, tile)
             var newPath = [...path, ...reducePath(newPosition, direction)]
-            var newPoints = hasEatenFood([...newPosition].pop(), food.position) ? player.points + 1 : player.points
         } else {
             var newPath = [...path, newPosition]
-            var newPoints = hasEatenFood(newPosition, food.position) ? player.points + 1 : player.points
         }
 
         return {
             food,
             snake: {
                 ...snake,
-                position: newPath.slice(-(newPoints + 1))
+                position: [newPosition]
             },
             area: newGameArea || area,
             path: newPath,
-            tile,
-            player: {
-                ...player,
-                points: newPoints
-            }
+            tile
+        }
+    }
+}
+
+export function snakeGrowReducer() {
+    return ({snake, food, specialFood, player, path, ...currentState}) => {
+        let {size, position} = snake
+        let {points} = player
+
+        if ( hasEatenFood([...position].pop(), food.position) ) {
+            size += 1
+            points += 1
+        }
+
+        if ( hasEatenFood([...position].pop(), specialFood.position) ) {
+            size += 2
+            points += 9
+        }
+
+        return {
+            snake: {...snake, size, position: path.slice(-size)},
+            player: {...player, points},
+            ...currentState
         }
     }
 }

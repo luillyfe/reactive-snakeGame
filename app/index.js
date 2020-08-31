@@ -42,7 +42,7 @@ function drawGame({snake, food, specialFood, tile, area}) {
     context.clearRect(0, 0, area.width, area.height)
     draw(snake, tile, context)
     draw(food, tile, context)
-    if (specialFood) draw(specialFood, tile, context)
+    draw(specialFood, tile, context)
 }
 
 function draw({position, color}, tile, context) {

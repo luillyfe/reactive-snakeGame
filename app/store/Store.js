@@ -23,7 +23,8 @@ function getInitialState() {
     const path = [{x: 0, y: 0}]
     const snake = {
         color: getSnakeColor(),
-        position: path
+        position: path,
+        size: 1
     }
     const food = {
         color: '#dccfc0',
@@ -37,10 +38,14 @@ function getInitialState() {
         width: 800,
         height: 800
     }
+    const specialFood = {
+        position: [{x: -16, y: -16}],
+    }
 
     return {
         snake,
         food,
+        specialFood,
         tile,
         path,
         player,
