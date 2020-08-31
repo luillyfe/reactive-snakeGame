@@ -32,7 +32,7 @@ function start() {
 
 }
 
-function drawGame({snake, food, tile, area}) {
+function drawGame({snake, food, specialFood, tile, area}) {
     const canvas = document.getElementById('canvas')
     const context = canvas.getContext('2d')
 
@@ -42,6 +42,7 @@ function drawGame({snake, food, tile, area}) {
     context.clearRect(0, 0, area.width, area.height)
     draw(snake, tile, context)
     draw(food, tile, context)
+    if (specialFood) draw(specialFood, tile, context)
 }
 
 function draw({position, color}, tile, context) {

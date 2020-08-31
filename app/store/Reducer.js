@@ -1,4 +1,4 @@
-import {getRandomTile} from "../utils/helpers.js";
+import {getRandomTile, getRandomColor} from "../utils/helpers.js";
 
 export function snakeReducer(direction) {
     return ({snake, path, tile, player, food, area}) => {
@@ -162,5 +162,12 @@ export function foodReducer() {
         }
 
         return {...currentState, tile, area, food: {...food, position}}
+    }
+}
+
+export function specialFoodReducer() {
+    return (currentState) => {
+        const {food, ...nextState} = foodReducer()(currentState)
+        return {...nextState, specialFood: {...food, color: getRandomColor()}}
     }
 }
