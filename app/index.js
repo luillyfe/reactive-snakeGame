@@ -1,5 +1,5 @@
 import {game$, store} from './store/index.js'
-import { Observable } from "./utils/Observable.js";
+import { fromEvent, of } from "./utils/Observable.js";
 import {scan, combineToLatestIf, catchError} from "./utils/operators.js";
 import {setItems, getItems} from "./utils/helpers.js";
 
@@ -7,7 +7,7 @@ start()
 
 function start() {
     const button = document.getElementById('button')
-    const starts$ = Observable.fromEvent(button, 'click');
+    const starts$ = fromEvent(button, 'click');
 
     starts$.pipe(
         scan(shouldSubscribe => !shouldSubscribe),
@@ -18,7 +18,7 @@ function start() {
             } else {
                 tearDown()
                 let {snake, area, food, tile} = store.getState()
-                return Observable.of({snake, area, food, tile});
+                return of({snake, area, food, tile});
             }
         }),
         catchError(error => {
