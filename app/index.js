@@ -42,7 +42,17 @@ function drawGame({snake, food, specialFood, tile, area}) {
     context.clearRect(0, 0, area.width, area.height)
     draw(snake, tile, context)
     draw(food, tile, context)
-    draw(specialFood, tile, context)
+    drawArc(specialFood, context)
+}
+
+function drawArc({position, color}, context) {
+    context.fillStyle = color
+    position.forEach(({x, y}) => {
+        context.beginPath();
+        context.arc(x, y, 14, 0, Math.PI * 2, true);
+        context.fill()
+        context.stroke();
+    })
 }
 
 function draw({position, color}, tile, context) {
