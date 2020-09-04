@@ -1,6 +1,8 @@
+const MOVE_SNAKE = 'MOVE_SNAKE'
+
 function snakeReducer(currentState = getInitialState(), {type, payload}) {
     switch (type) {
-        case 'MOVE_SNAKE': {
+        case MOVE_SNAKE: {
             return currentState
         }
         default: return currentState
