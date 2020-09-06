@@ -1,8 +1,10 @@
 import {Store, combineReducers} from './store/index.js'
 import {snake, food, tile, game} from './components/index.js'
 
+import {moveSnakeAction} from './store/actions.js'
+
 import {fromEvent} from './streams/Observable.js'
-import {map, filter} from './streams/operators.js'
+import {map, filter, doAction} from './streams/operators.js'
 
 app()
 
@@ -15,17 +17,20 @@ function app() {
 
     store
         .subscribe(({snake, food, tile, game}) => {
-            context.clearRect(0, 0, game.width, game.height)
+            const {width, height} = game.area
+            context.clearRect(0, 0, width, height)
 
             drawOnCanvas(snake, tile)
             drawOnCanvas(food, tile)
         })
     store.dispatch({})
+    const moveSnake = moveSnakeAction(store)
 
     const snakeMoves$ = fromEvent(document, 'keydown')
         .pipe(
             map(({key}) => key),
-            filter(isKeyAllowed)
+            filter(isKeyAllowed),
+            doAction(key  => moveSnake(key))
         )
 
     snakeMoves$.subscribe(console.log)

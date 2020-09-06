@@ -35,5 +35,5 @@ function combineReducers(reducers) {
 
 export {
     Store,
-    combineReducers
+    combineReducers,
 }

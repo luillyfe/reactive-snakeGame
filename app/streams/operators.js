@@ -1,6 +1,6 @@
 import {Observable} from "./Observable.js";
 
-const map = projectFn =>
+export const map = projectFn =>
     source =>
         new Observable(observer => {
             source.subscribe({
@@ -9,7 +9,7 @@ const map = projectFn =>
             })
         })
 
-const filter = predicateFn =>
+export const filter = predicateFn =>
     source =>
         new Observable(observer => {
             source.subscribe({
@@ -18,4 +18,14 @@ const filter = predicateFn =>
             })
         })
 
-export {map, filter}
+export const doAction = fn =>
+    source =>
+        new Observable(observer => {
+            source.subscribe({
+                ...observer,
+                next: ev => {
+                    fn(ev)
+                    observer.next(ev)
+                }
+            })
+        })
