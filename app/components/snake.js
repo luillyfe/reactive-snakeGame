@@ -15,17 +15,6 @@ function snakeReducer(currentState = getInitialState(), {type, payload}) {
     }
 }
 
-function getNextPosition(headPosition, direction, tile) {
-    const {x, y} = headPosition
-
-    switch(direction) {
-        case 'ArrowDown': return [{x, y: y + tile}]
-        case 'ArrowUp': return [{x, y: y - tile}]
-        case 'ArrowRight': return [{x: x + tile,  y}]
-        case 'ArrowLeft': return [{x: x - tile, y}]
-    }
-}
-
 function getInitialState() {
     return {
         position: [{x: 0, y: 0}],

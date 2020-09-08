@@ -1,8 +1,9 @@
 import {snakeReducer} from './snake.js'
 import {gameReducer} from './game.js'
+import {foodReducer} from "./food.js";
 
 const snake = snakeReducer
-const food = () => ({position: [{x: 160, y: 160}], color: 'red'})
+const food = foodReducer
 const game = gameReducer
 const tile = () => 16
 

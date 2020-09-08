@@ -1,3 +1,5 @@
+import {getRandomNumber} from "../utils/index.js";
+
 export class Observable {
     constructor(subscribe) {
         this._subscribe = subscribe
@@ -44,4 +46,22 @@ function fromEvent(dom, eventName) {
     })
 }
 
-export {fromEvent}
+function irregularIntervals(start, min, max) {
+    return new Observable(observer => {
+        const handler = () => {
+            observer.next()
+            clearTimeout(timeout)
+            timeout = setTimeout(handler, getRandomNumber(min, max) * 1000)
+        }
+
+        var timeout = setTimeout(handler, start * 1000)
+
+        return {
+            unsubscribe() {
+                clearTimeout(timeout)
+            }
+        }
+    })
+}
+
+export {fromEvent, irregularIntervals}

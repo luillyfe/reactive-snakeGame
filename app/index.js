@@ -1,9 +1,9 @@
 import {Store, combineReducers} from './store/index.js'
 import {snake, food, tile, game} from './components/index.js'
 
-import {moveSnakeAction} from './components/actions.js'
+import {moveSnakeAction, placeFoodAction} from './components/actions.js'
 
-import {fromEvent} from './streams/Observable.js'
+import {fromEvent, irregularIntervals} from './streams/Observable.js'
 import {map, filter, doAction} from './streams/operators.js'
 
 app()
@@ -24,8 +24,8 @@ function app() {
             drawOnCanvas(food, tile)
         })
     store.dispatch({})
-    const moveSnake = moveSnakeAction(store)
 
+    const moveSnake = moveSnakeAction(store)
     const snakeMoves$ = fromEvent(document, 'keydown')
         .pipe(
             map(({key}) => key),
@@ -33,7 +33,13 @@ function app() {
             doAction(moveSnake)
         )
 
-    snakeMoves$.subscribe(console.log)
+    const placeFood = placeFoodAction(store)
+    const placingFood$ = irregularIntervals(5, 4, 10)
+        .pipe(
+            doAction(placeFood)
+        ).subscribe(value => value)
+
+    snakeMoves$.subscribe(value => value)
 }
 
 function draw(context) {
