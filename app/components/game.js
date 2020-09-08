@@ -1,8 +1,8 @@
-import {MOVE_SNAKE} from "./snake.js";
+export const UPDATE_PATH = "UPDATE_PATH";
 
 export function gameReducer(currentState = getInitialState(), {type, payload}) {
     switch (type) {
-        case MOVE_SNAKE: {
+        case UPDATE_PATH: {
             const {path} = currentState
             const {key: direction, tile} = payload
 

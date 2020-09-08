@@ -1,7 +1,7 @@
 import {Store, combineReducers} from './store/index.js'
 import {snake, food, tile, game} from './components/index.js'
 
-import {moveSnakeAction} from './store/actions.js'
+import {moveSnakeAction} from './components/actions.js'
 
 import {fromEvent} from './streams/Observable.js'
 import {map, filter, doAction} from './streams/operators.js'

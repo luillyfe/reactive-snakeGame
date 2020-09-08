@@ -3,11 +3,11 @@ const MOVE_SNAKE = 'MOVE_SNAKE'
 function snakeReducer(currentState = getInitialState(), {type, payload}) {
     switch (type) {
         case MOVE_SNAKE: {
-            const {key: direction, tile} = payload
-            const {position} = currentState
+            const {path} = payload
+
             return {
                 ...currentState,
-                position: getNextPosition([...position].pop(), direction, tile)
+                position: path.slice(-1)
             }
         }
         default:
