@@ -3,7 +3,7 @@ import {snake, food, tile, game} from './components/index.js'
 
 import {moveSnakeAction, placeFoodAction} from './components/actions.js'
 
-import {fromEvent, irregularIntervals} from './streams/Observable.js'
+import {fromEvent, irregularIntervals, mergeAll} from './streams/Observable.js'
 import {map, filter, doAction} from './streams/operators.js'
 
 app()
@@ -37,9 +37,10 @@ function app() {
     const placingFood$ = irregularIntervals(5, 4, 10)
         .pipe(
             doAction(placeFood)
-        ).subscribe(value => value)
+        )
 
-    snakeMoves$.subscribe(value => value)
+    const game$ = mergeAll(snakeMoves$, placingFood$)
+    game$.subscribe(value => value)
 }
 
 function draw(context) {

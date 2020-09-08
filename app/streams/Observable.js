@@ -64,4 +64,16 @@ function irregularIntervals(start, min, max) {
     })
 }
 
-export {fromEvent, irregularIntervals}
+function mergeAll(...Obs) {
+    return new Observable(observer => {
+        const subscriptions = Obs.map(observable => observable.subscribe(observer))
+
+        return {
+            unsubscribe() {
+                subscriptions.forEach(sub => sub())
+            }
+        }
+    })
+}
+
+export {fromEvent, irregularIntervals, mergeAll}
