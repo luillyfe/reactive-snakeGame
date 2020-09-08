@@ -30,7 +30,7 @@ function app() {
         .pipe(
             map(({key}) => key),
             filter(isKeyAllowed),
-            doAction(key  => moveSnake(key))
+            doAction(moveSnake)
         )
 
     snakeMoves$.subscribe(console.log)
