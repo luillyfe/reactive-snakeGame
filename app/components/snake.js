@@ -4,7 +4,8 @@ const GROW_SNAKE = 'GROW_SNAKE'
 function snakeReducer(currentState = getInitialState(), {type, payload}) {
     switch (type) {
         case MOVE_SNAKE: {
-            const {path, size} = payload
+            const {size} = currentState
+            const {path} = payload
 
             return {
                 ...currentState,
@@ -12,26 +13,16 @@ function snakeReducer(currentState = getInitialState(), {type, payload}) {
             }
         }
         case GROW_SNAKE: {
-            const {position, size} = currentState
-            const {foodPosition} = payload
-
-            const newSize = areInTheSamePosition(
-                position[position.length - 1],
-                foodPosition[foodPosition.length - 1]) ? size + 1 : size
+            const {size} = currentState
 
             return {
                 ...currentState,
-                size: newSize
+                size: size + 1
             }
         }
         default:
             return currentState
     }
-}
-
-function areInTheSamePosition(snakePosition, foodPosition) {
-    return (snakePosition.x === foodPosition.x &&
-        snakePosition.y === foodPosition.y)
 }
 
 function getInitialState() {

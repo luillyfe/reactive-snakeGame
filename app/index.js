@@ -1,5 +1,5 @@
 import {Store, combineReducers} from './store/index.js'
-import {snake, food, tile, game} from './components/index.js'
+import {snake, food, tile, game, player} from './components/index.js'
 
 import {moveSnakeAction, shouldGrowAction, placeFoodAction} from './components/actions.js'
 
@@ -12,7 +12,13 @@ function app() {
     const canvas = document.getElementById('canvas')
     const context = canvas.getContext('2d')
     const drawOnCanvas = draw(context)
-    const appReducer = combineReducers({snake, food, tile, game})
+    const appReducer = combineReducers({
+        snake,
+        food,
+        tile,
+        game,
+        player
+    })
     const store = new Store(appReducer)
 
     store
@@ -32,7 +38,7 @@ function app() {
             map(({key}) => key),
             filter(isKeyAllowed),
             doAction(moveSnake),
-            doAction(shouldGrow)
+            doAction(shouldGrow),
         )
 
     const placeFood = placeFoodAction(store)

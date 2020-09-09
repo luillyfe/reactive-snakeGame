@@ -1,7 +1,9 @@
 import {MOVE_SNAKE, GROW_SNAKE} from "./snake.js";
 import {UPDATE_PATH} from "./game.js";
 import {PLACE_FOOD} from "./food.js";
-import {getRandomNumber} from "../utils/index.js";
+import {SCORE_POINTS} from "./player.js";
+
+import {getRandomNumber, areInTheSamePosition} from "../utils/index.js";
 
 export const moveSnakeAction = store => key => {
     const {tile} = store.getState()
@@ -20,19 +22,28 @@ export const moveSnakeAction = store => key => {
 }
 
 export const shouldGrowAction = store => () => {
-    const {food} = store.getState()
+    const {snake, food} = store.getState()
 
-    store.dispatch({
-        type: GROW_SNAKE,
-        payload: {foodPosition: food.position}
-    })
+    const areThey = areInTheSamePosition(
+        snake.position[snake.position.length - 1],
+        food.position[food.position.length - 1])
 
-    const {game, snake} = store.getState()
+    if (areThey) {
+        store.dispatch({
+            type: GROW_SNAKE
+        })
 
-    store.dispatch({
-        type: MOVE_SNAKE,
-        payload: {path: game.path, size: snake.size}
-    })
+        store.dispatch({
+            type: SCORE_POINTS
+        })
+
+        const {game} = store.getState()
+
+        store.dispatch({
+            type: MOVE_SNAKE,
+            payload: {path: game.path}
+        })
+    }
 
 }
 
