@@ -1,7 +1,7 @@
 import {Store, combineReducers} from './store/index.js'
 import {snake, food, tile, game} from './components/index.js'
 
-import {moveSnakeAction, placeFoodAction} from './components/actions.js'
+import {moveSnakeAction, shouldGrowAction, placeFoodAction} from './components/actions.js'
 
 import {fromEvent, irregularIntervals, mergeAll} from './streams/Observable.js'
 import {map, filter, doAction} from './streams/operators.js'
@@ -26,11 +26,13 @@ function app() {
     store.dispatch({})
 
     const moveSnake = moveSnakeAction(store)
+    const shouldGrow = shouldGrowAction(store)
     const snakeMoves$ = fromEvent(document, 'keydown')
         .pipe(
             map(({key}) => key),
             filter(isKeyAllowed),
-            doAction(moveSnake)
+            doAction(moveSnake),
+            doAction(shouldGrow)
         )
 
     const placeFood = placeFoodAction(store)
