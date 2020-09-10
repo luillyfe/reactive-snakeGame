@@ -1,9 +1,18 @@
-import {MOVE_SNAKE, GROW_SNAKE} from "./snake.js";
-import {UPDATE_PATH} from "./game.js";
+import {
+    MOVE_SNAKE,
+    GROW_SNAKE,
+    REVERSE_SNAKE_DIRECTION,
+    UPDATE_PATH
+} from "./snake.js";
 import {PLACE_FOOD} from "./food.js";
 import {SCORE_POINTS} from "./player.js";
 
-import {getRandomNumber, areInTheSamePosition} from "../utils/index.js";
+import {
+    getRandomNumber,
+    areInTheSamePosition,
+    itHitsABoundary,
+    getOpositeDirection
+} from "../utils/index.js";
 
 export const moveSnakeAction = store => key => {
     const {tile} = store.getState()
@@ -13,22 +22,19 @@ export const moveSnakeAction = store => key => {
         payload: {key, tile}
     })
 
-    const {game, snake} = store.getState()
-
     store.dispatch({
-        type: MOVE_SNAKE,
-        payload: {path: game.path, size: snake.size}
+        type: MOVE_SNAKE
     })
 }
 
-export const shouldGrowAction = store => () => {
+export const shouldGrowAction = store => key => {
     const {snake, food} = store.getState()
 
-    const areThey = areInTheSamePosition(
+    const showSnakeGrow = areInTheSamePosition(
         snake.position[snake.position.length - 1],
         food.position[food.position.length - 1])
 
-    if (areThey) {
+    if (showSnakeGrow) {
         store.dispatch({
             type: GROW_SNAKE
         })
@@ -37,14 +43,24 @@ export const shouldGrowAction = store => () => {
             type: SCORE_POINTS
         })
 
-        const {game} = store.getState()
-
-        store.dispatch({
-            type: MOVE_SNAKE,
-            payload: {path: game.path}
-        })
+        moveSnakeAction(store)(key)
     }
 
+}
+
+export const shouldReverseAction = store => key => {
+    const {snake, game, tile} = store.getState()
+
+    const snakeHittedABoundary = itHitsABoundary(snake.position[snake.position.length - 1], game.area)
+
+    if (snakeHittedABoundary) {
+        store.dispatch({
+            type: REVERSE_SNAKE_DIRECTION,
+            payload: {direction: key, tile}
+        })
+
+        moveSnakeAction(store)(getOpositeDirection(key))
+    }
 }
 
 export const placeFoodAction = store => () => {

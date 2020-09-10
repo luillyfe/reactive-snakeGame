@@ -3,7 +3,6 @@ const SCORE_POINTS = 'SCORE_POINTS'
 function playerReducer(currentState = getInitialState(), {type}) {
     switch (type) {
         case SCORE_POINTS: {
-            console.log(currentState.points);
             return {...currentState, points: currentState.points + 1}
         }
         default:
