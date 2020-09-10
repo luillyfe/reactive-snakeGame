@@ -28,3 +28,8 @@ export function getOpositeDirection(direction) {
             return direction;
     }
 }
+
+export function isDirectionAllowed(currentDirection, key, snakeSize) {
+    if (!currentDirection || snakeSize <= 1) return true
+    return (currentDirection !== getOpositeDirection(key))
+}

@@ -6,13 +6,16 @@ import {
 } from "./snake.js";
 import {PLACE_FOOD} from "./food.js";
 import {SCORE_POINTS} from "./player.js";
+import {REGISTER_DIRECTION} from "./game.js";
 
 import {
     getRandomNumber,
     areInTheSamePosition,
     itHitsABoundary,
-    getOpositeDirection
+    getOpositeDirection,
+    isDirectionAllowed
 } from "../utils/index.js";
+
 
 export const moveSnakeAction = store => key => {
     const {tile} = store.getState()
@@ -24,6 +27,11 @@ export const moveSnakeAction = store => key => {
 
     store.dispatch({
         type: MOVE_SNAKE
+    })
+
+    store.dispatch({
+        type: REGISTER_DIRECTION,
+        payload: {direction: key}
     })
 }
 
@@ -76,4 +84,10 @@ export const placeFoodAction = store => () => {
         type: PLACE_FOOD,
         payload: {position}
     })
+}
+
+export const isDirectionAllowedAction = store => key => {
+    const {game, snake} = store.getState()
+
+    return isDirectionAllowed(game.currentDirection, key, snake.size)
 }

@@ -5,7 +5,8 @@ import {
     moveSnakeAction,
     shouldGrowAction,
     shouldReverseAction,
-    placeFoodAction
+    placeFoodAction,
+    isDirectionAllowedAction
 } from './components/actions.js'
 
 import {fromEvent, irregularIntervals, mergeAll} from './streams/Observable.js'
@@ -39,10 +40,12 @@ function app() {
     const moveSnake = moveSnakeAction(store)
     const shouldGrow = shouldGrowAction(store)
     const shouldReverse = shouldReverseAction(store)
+    const isDirectionAllowed = isDirectionAllowedAction(store)
     const snakeMoves$ = fromEvent(document, 'keydown')
         .pipe(
             map(({key}) => key),
             filter(isKeyAllowed),
+            filter(isDirectionAllowed),
             doAction(moveSnake),
             doAction(shouldReverse),
             doAction(shouldGrow),
