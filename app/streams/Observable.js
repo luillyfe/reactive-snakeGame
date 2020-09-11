@@ -70,10 +70,14 @@ function mergeAll(...Obs) {
 
         return {
             unsubscribe() {
-                subscriptions.forEach(sub => sub())
+                subscriptions.forEach(sub => sub.unsubscribe())
             }
         }
     })
 }
 
-export {fromEvent, irregularIntervals, mergeAll}
+export {
+    fromEvent,
+    irregularIntervals,
+    mergeAll
+}

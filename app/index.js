@@ -6,11 +6,12 @@ import {
     shouldGrowAction,
     shouldReverseAction,
     placeFoodAction,
-    isDirectionAllowedAction
+    isDirectionAllowedAction,
+    snakeHittedItselfAction
 } from './components/actions.js'
 
 import {fromEvent, irregularIntervals, mergeAll} from './streams/Observable.js'
-import {map, filter, doAction} from './streams/operators.js'
+import {map, filter, doAction, takeUntil} from './streams/operators.js'
 
 app()
 
@@ -37,19 +38,24 @@ function app() {
         })
     store.dispatch({})
 
+    const arrowKeys$ = fromEvent(document, 'keydown')
+        .pipe(
+            map(({key}) => key),
+            filter(isKeyAllowed)
+        )
+
     const moveSnake = moveSnakeAction(store)
     const shouldGrow = shouldGrowAction(store)
     const shouldReverse = shouldReverseAction(store)
     const isDirectionAllowed = isDirectionAllowedAction(store)
-    const snakeMoves$ = fromEvent(document, 'keydown')
-        .pipe(
-            map(({key}) => key),
-            filter(isKeyAllowed),
-            filter(isDirectionAllowed),
-            doAction(moveSnake),
-            doAction(shouldReverse),
-            doAction(shouldGrow),
-        )
+    const snakeHittedItself = snakeHittedItselfAction(store)
+    const fireWhenSnakeHitsItself$ = arrowKeys$.pipe(filter(snakeHittedItself))
+    const snakeMoves$ = arrowKeys$.pipe(
+        filter(isDirectionAllowed),
+        doAction(moveSnake),
+        doAction(shouldReverse),
+        doAction(shouldGrow),
+    )
 
     const placeFood = placeFoodAction(store)
     const placingFood$ = irregularIntervals(5, 4, 10)
@@ -58,6 +64,7 @@ function app() {
         )
 
     const game$ = mergeAll(snakeMoves$, placingFood$)
+        .pipe(takeUntil(fireWhenSnakeHitsItself$))
     game$.subscribe(value => value)
 }
 

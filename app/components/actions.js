@@ -100,3 +100,12 @@ export const isDirectionAllowedAction = store => key => {
 
     return isDirectionAllowed(game.currentDirection, key, snake.size)
 }
+
+export const snakeHittedItselfAction = store => () => {
+    const {snake} = store.getState()
+    const lastIndex = snake.position.length - 1
+    const snakeHead = snake.position[lastIndex]
+    return snake.position
+        .slice(0, lastIndex)
+        .some(({x, y}) => x === snakeHead.x && y === snakeHead.y)
+}
