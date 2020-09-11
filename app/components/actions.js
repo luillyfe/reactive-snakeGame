@@ -35,7 +35,7 @@ export const moveSnakeAction = store => key => {
     })
 }
 
-export const shouldGrowAction = store => key => {
+export const shouldGrowAction = store => () => {
     const {snake, food} = store.getState()
 
     const showSnakeGrow = areInTheSamePosition(
@@ -51,7 +51,9 @@ export const shouldGrowAction = store => key => {
             type: SCORE_POINTS
         })
 
-        moveSnakeAction(store)(key)
+        store.dispatch({
+            type: MOVE_SNAKE
+        })
     }
 
 }
@@ -67,7 +69,14 @@ export const shouldReverseAction = store => key => {
             payload: {direction: key, tile}
         })
 
-        moveSnakeAction(store)(getOpositeDirection(key))
+        store.dispatch({
+            type: MOVE_SNAKE
+        })
+
+        store.dispatch({
+            type: REGISTER_DIRECTION,
+            payload: {direction: getOpositeDirection(key)}
+        })
     }
 }
 
