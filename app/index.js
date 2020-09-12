@@ -20,6 +20,7 @@ function app() {
     const start = document.getElementById('button')
     const context = canvas.getContext('2d')
     const drawOnCanvas = draw(context)
+
     const start$ = fromEvent(start, 'click')
     const arrowKeys$ = fromEvent(document, 'keydown')
         .pipe(
@@ -61,8 +62,8 @@ function app() {
             game$.subscribe(value => value)
         })
 
-    connectStore(({snake, food, tile, game}) => {
-        const {width, height} = game.area
+    connectStore(({snake, food, tile, gameArea}) => {
+        const {width, height} = gameArea
         context.clearRect(0, 0, width, height)
 
         drawOnCanvas(snake, tile)

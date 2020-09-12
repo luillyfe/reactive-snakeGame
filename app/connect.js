@@ -19,8 +19,19 @@ const rootReducer = (state, action) => {
     return appReducer(state, action)
 }
 const store = new Store(rootReducer)
+
 function connectStore(render) {
-    store.subscribe(render)
+    store.subscribe(state => {
+        const {snake, food, game, player, tile} = state;
+
+        render({
+            snake: {position: snake.position, color: snake.color},
+            food: {position: food.position, color: food.color},
+            gameArea: game.area,
+            score: player.points,
+            tile
+        })
+    })
     store.dispatch({})
 }
 
