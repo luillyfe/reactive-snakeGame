@@ -109,3 +109,8 @@ export const snakeHittedItselfAction = store => () => {
         .slice(0, lastIndex)
         .some(({x, y}) => x === snakeHead.x && y === snakeHead.y)
 }
+
+export const isGameSttopedAction = store => () => {
+    const {game} = store.getState();
+    return !game.currentDirection
+}

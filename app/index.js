@@ -7,7 +7,8 @@ import {
     shouldReverseAction,
     placeFoodAction,
     isDirectionAllowedAction,
-    snakeHittedItselfAction
+    snakeHittedItselfAction,
+    isGameSttopedAction
 } from './components/actions.js'
 
 import {fromEvent, irregularIntervals, mergeAll} from './streams/Observable.js'
@@ -17,16 +18,23 @@ app()
 
 function app() {
     const canvas = document.getElementById('canvas')
+    const start = document.getElementById('button')
     const context = canvas.getContext('2d')
     const drawOnCanvas = draw(context)
-    const appReducer = combineReducers({
-        snake,
-        food,
-        tile,
-        game,
-        player
-    })
-    const store = new Store(appReducer)
+    const start$ = fromEvent(start, 'click')
+    const arrowKeys$ = fromEvent(document, 'keydown')
+        .pipe(
+            map(({key}) => key),
+            filter(isKeyAllowed)
+        )
+    const appReducer = combineReducers({snake, food, tile, game, player})
+    const rootReducer = (state, action) => {
+        if (action.type === 'RESET') {
+            state = undefined
+        }
+        return appReducer(state, action)
+    }
+    const store = new Store(rootReducer)
 
     store
         .subscribe(({snake, food, tile, game}) => {
@@ -38,18 +46,19 @@ function app() {
         })
     store.dispatch({})
 
-    const arrowKeys$ = fromEvent(document, 'keydown')
-        .pipe(
-            map(({key}) => key),
-            filter(isKeyAllowed)
-        )
-
     const moveSnake = moveSnakeAction(store)
     const shouldGrow = shouldGrowAction(store)
     const shouldReverse = shouldReverseAction(store)
     const isDirectionAllowed = isDirectionAllowedAction(store)
     const snakeHittedItself = snakeHittedItselfAction(store)
-    const fireWhenSnakeHitsItself$ = arrowKeys$.pipe(filter(snakeHittedItself))
+    const fireWhenSnakeHitsItself$ = arrowKeys$
+        .pipe(
+            filter(snakeHittedItself),
+            doAction(() => {
+                start.innerText = 'Start Again'
+                store.dispatch({type: 'RESET'})
+            })
+        )
     const snakeMoves$ = arrowKeys$.pipe(
         filter(isDirectionAllowed),
         doAction(moveSnake),
@@ -64,8 +73,18 @@ function app() {
         )
 
     const game$ = mergeAll(snakeMoves$, placingFood$)
-        .pipe(takeUntil(fireWhenSnakeHitsItself$))
-    game$.subscribe(value => value)
+        .pipe(
+            takeUntil(fireWhenSnakeHitsItself$)
+        )
+
+    const isGameSttoped = isGameSttopedAction(store)
+    start$
+        .pipe(
+            filter(isGameSttoped)
+        )
+        .subscribe(() => {
+            game$.subscribe(value => value)
+        })
 }
 
 function draw(context) {
