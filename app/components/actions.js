@@ -114,3 +114,7 @@ export const isGameSttopedAction = store => () => {
     const {game} = store.getState();
     return !game.currentDirection
 }
+
+export const resetAction = store => () => {
+    store.dispatch({type: 'RESET'})
+}

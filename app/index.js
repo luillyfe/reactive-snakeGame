@@ -1,15 +1,14 @@
-import {Store, combineReducers} from './store/index.js'
-import {snake, food, tile, game, player} from './components/index.js'
-
 import {
-    moveSnakeAction,
-    shouldGrowAction,
-    shouldReverseAction,
-    placeFoodAction,
-    isDirectionAllowedAction,
-    snakeHittedItselfAction,
-    isGameSttopedAction
-} from './components/actions.js'
+    moveSnake,
+    shouldGrow,
+    shouldReverse,
+    isDirectionAllowed,
+    snakeHittedItself,
+    placeFood,
+    isGameSttoped,
+    reset,
+    connectStore
+} from './connect.js'
 
 import {fromEvent, irregularIntervals, mergeAll} from './streams/Observable.js'
 import {map, filter, doAction, takeUntil} from './streams/operators.js'
@@ -27,36 +26,14 @@ function app() {
             map(({key}) => key),
             filter(isKeyAllowed)
         )
-    const appReducer = combineReducers({snake, food, tile, game, player})
-    const rootReducer = (state, action) => {
-        if (action.type === 'RESET') {
-            state = undefined
-        }
-        return appReducer(state, action)
-    }
-    const store = new Store(rootReducer)
 
-    store
-        .subscribe(({snake, food, tile, game}) => {
-            const {width, height} = game.area
-            context.clearRect(0, 0, width, height)
 
-            drawOnCanvas(snake, tile)
-            drawOnCanvas(food, tile)
-        })
-    store.dispatch({})
-
-    const moveSnake = moveSnakeAction(store)
-    const shouldGrow = shouldGrowAction(store)
-    const shouldReverse = shouldReverseAction(store)
-    const isDirectionAllowed = isDirectionAllowedAction(store)
-    const snakeHittedItself = snakeHittedItselfAction(store)
     const fireWhenSnakeHitsItself$ = arrowKeys$
         .pipe(
             filter(snakeHittedItself),
             doAction(() => {
                 start.innerText = 'Start Again'
-                store.dispatch({type: 'RESET'})
+                reset()
             })
         )
     const snakeMoves$ = arrowKeys$.pipe(
@@ -66,7 +43,6 @@ function app() {
         doAction(shouldGrow),
     )
 
-    const placeFood = placeFoodAction(store)
     const placingFood$ = irregularIntervals(5, 4, 10)
         .pipe(
             doAction(placeFood)
@@ -77,7 +53,6 @@ function app() {
             takeUntil(fireWhenSnakeHitsItself$)
         )
 
-    const isGameSttoped = isGameSttopedAction(store)
     start$
         .pipe(
             filter(isGameSttoped)
@@ -85,6 +60,14 @@ function app() {
         .subscribe(() => {
             game$.subscribe(value => value)
         })
+
+    connectStore(({snake, food, tile, game}) => {
+        const {width, height} = game.area
+        context.clearRect(0, 0, width, height)
+
+        drawOnCanvas(snake, tile)
+        drawOnCanvas(food, tile)
+    })
 }
 
 function draw(context) {
