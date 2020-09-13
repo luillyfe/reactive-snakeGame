@@ -1,3 +1,5 @@
+import {getFromLocalStorage} from "../LocalStorage.js";
+
 const UPDATE_PATH = 'UPDATE_PATH'
 
 const MOVE_SNAKE = 'MOVE_SNAKE'
@@ -122,9 +124,11 @@ function reverseDirection(snakePosition, direction, tile) {
 }
 
 function getInitialState() {
+    const {snakeColor} = getFromLocalStorage()
+
     return {
         position: [{x: 0, y: 0}],
-        color: '#f093a2',
+        color: snakeColor,
         size: 1,
         path: [{x: 0, y: 0}]
     }

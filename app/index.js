@@ -18,6 +18,7 @@ app()
 function app() {
     const canvas = document.getElementById('canvas')
     const start = document.getElementById('button')
+    const scoreLabel = document.getElementById('score')
     const context = canvas.getContext('2d')
     const drawOnCanvas = draw(context)
 
@@ -62,8 +63,10 @@ function app() {
             game$.subscribe(value => value)
         })
 
-    connectStore(({snake, food, tile, gameArea}) => {
+    connectStore(({snake, food, tile, gameArea, score}) => {
         const {width, height} = gameArea
+        scoreLabel.innerText = score
+        scoreLabel.style = `color: ${snake.color}`
         context.clearRect(0, 0, width, height)
 
         drawOnCanvas(snake, tile)

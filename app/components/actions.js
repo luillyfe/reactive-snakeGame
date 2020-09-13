@@ -13,8 +13,10 @@ import {
     areInTheSamePosition,
     itHitsABoundary,
     getOpositeDirection,
-    isDirectionAllowed
+    isDirectionAllowed,
+    getRandomColor
 } from "../utils/index.js";
+import {getFromLocalStorage, saveToLocalStorage} from "../LocalStorage.js";
 
 
 export const moveSnakeAction = store => key => {
@@ -116,5 +118,13 @@ export const isGameSttopedAction = store => () => {
 }
 
 export const resetAction = store => () => {
+    const {player} = store.getState()
+    const {lastScore} = getFromLocalStorage()
+    if (player.points > lastScore) {
+        saveToLocalStorage({
+            lastScore: player.points,
+            snakeColor: getRandomColor()
+        })
+    }
     store.dispatch({type: 'RESET'})
 }
