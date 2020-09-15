@@ -6,7 +6,7 @@ import {
 } from "./snake.js";
 import {PLACE_FOOD} from "./food.js";
 import {SCORE_POINTS} from "./player.js";
-import {REGISTER_DIRECTION} from "./game.js";
+import {REGISTER_DIRECTION, DECREASE_GAME_AREA} from "./game.js";
 
 import {
     getRandomNumber,
@@ -67,8 +67,14 @@ export const shouldReverseAction = store => key => {
 
     if (snakeHittedABoundary) {
         store.dispatch({
+            type: DECREASE_GAME_AREA
+        })
+
+        const {game: gameUpdated} = store.getState()
+
+        store.dispatch({
             type: REVERSE_SNAKE_DIRECTION,
-            payload: {direction: key, tile}
+            payload: {direction: key, tile, gameArea: gameUpdated.area}
         })
 
         store.dispatch({

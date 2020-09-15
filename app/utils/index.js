@@ -37,3 +37,16 @@ export function isDirectionAllowed(currentDirection, key, snakeSize) {
     if (!currentDirection || snakeSize <= 1) return true
     return (currentDirection !== getOpositeDirection(key))
 }
+
+export function isOutGameArea(position, gameArea) {
+    const {width, height} = gameArea
+    for (let {x, y} of position) {
+        if (x > width || y > height) return true
+    }
+    return false
+}
+
+export function offsetGameArea(position, gameArea) {
+    const {width, height} = gameArea
+    return position.map(({x, y}) => ({x: x - Math.sqrt(width), y: y - Math.sqrt(height)}))
+}

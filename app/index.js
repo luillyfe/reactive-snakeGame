@@ -65,8 +65,12 @@ function app() {
 
     connectStore(({snake, food, tile, gameArea, score}) => {
         const {width, height} = gameArea
+
         scoreLabel.innerText = score
         scoreLabel.style = `color: ${snake.color}`
+        canvas.width = width
+        canvas.height = height
+
         context.clearRect(0, 0, width, height)
 
         drawOnCanvas(snake, tile)

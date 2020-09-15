@@ -1,4 +1,5 @@
 import {getFromLocalStorage} from "../LocalStorage.js";
+import {isOutGameArea, offsetGameArea} from "../utils/index.js";
 
 const UPDATE_PATH = 'UPDATE_PATH'
 
@@ -25,11 +26,14 @@ function snakeReducer(currentState = getInitialState(), {type, payload}) {
             }
         }
         case REVERSE_SNAKE_DIRECTION: {
-            const {direction, tile} = payload
+            const {direction, tile, gameArea} = payload
             const {path, size} = currentState
             const newPath = path.slice(0, path.length - 1)
 
-            const newPosition = reverseDirection(newPath.slice(-size), direction, tile)
+            let newPosition = reverseDirection(newPath.slice(-size), direction, tile)
+            if (isOutGameArea(newPosition, gameArea)) {
+                newPosition = offsetGameArea(newPosition, gameArea)
+            }
 
             return {
                 ...currentState,
