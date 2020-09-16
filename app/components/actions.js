@@ -4,7 +4,7 @@ import {
     REVERSE_SNAKE_DIRECTION,
     UPDATE_PATH
 } from "./snake.js";
-import {PLACE_FOOD} from "./food.js";
+import {PLACE_FOOD, PLACE_SPECIAL_FOOD} from "./food.js";
 import {SCORE_POINTS} from "./player.js";
 import {REGISTER_DIRECTION, DECREASE_GAME_AREA} from "./game.js";
 
@@ -62,6 +62,34 @@ export const shouldGrowAction = store => () => {
 
 }
 
+export const shouldGrowBy2Action = store => () => {
+    const {snake, food} = store.getState()
+    const special = food.special
+
+    const showSnakeGrowBy2 = areInTheSamePosition(
+        snake.position[snake.position.length - 1],
+        special.position[special.position.length - 1])
+
+    if (showSnakeGrowBy2) {
+        store.dispatch({
+            type: GROW_SNAKE,
+            payload: {units: 2}
+        })
+
+        store.dispatch({
+            type: SCORE_POINTS,
+            payload: {points: 9}
+        })
+
+        placeSpecialFoodAction(store)()
+
+        store.dispatch({
+            type: MOVE_SNAKE
+        })
+    }
+
+}
+
 export const shouldReverseAction = store => key => {
     const {snake, game, tile} = store.getState()
 
@@ -102,6 +130,21 @@ export const placeFoodAction = store => () => {
     store.dispatch({
         type: PLACE_FOOD,
         payload: {position}
+    })
+}
+
+export const placeSpecialFoodAction = store => () => {
+    const {tile, game} = store.getState()
+    const area = game.area.width
+
+    const position = [{
+        x: getRandomNumber(0, area / tile) * tile,
+        y: getRandomNumber(0, area / tile) * tile
+    }]
+
+    store.dispatch({
+        type: PLACE_SPECIAL_FOOD,
+        payload: {position, color: getRandomColor()}
     })
 }
 

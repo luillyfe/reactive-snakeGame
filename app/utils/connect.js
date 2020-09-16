@@ -8,7 +8,9 @@ import {
     shouldGrowAction,
     shouldReverseAction,
     snakeHittedItselfAction,
-    resetAction
+    resetAction,
+    placeSpecialFoodAction,
+    shouldGrowBy2Action
 } from "../components/actions.js";
 
 const appReducer = combineReducers({snake, food, tile, game, player})
@@ -27,6 +29,7 @@ function connectStore(render) {
         render({
             snake: {position: snake.position, color: snake.color},
             food: {position: food.position, color: food.color},
+            specialFood: {position: food.special.position, color: food.special.color},
             gameArea: game.area,
             score: player.points,
             tile
@@ -43,6 +46,8 @@ export const snakeHittedItself = snakeHittedItselfAction(store)
 export const placeFood = placeFoodAction(store)
 export const isGameSttoped = isGameSttopedAction(store)
 export const reset = resetAction(store)
+export const placeSpecialFood = placeSpecialFoodAction(store)
+export const shouldGrowBy2 = shouldGrowBy2Action(store)
 
 export {
     connectStore

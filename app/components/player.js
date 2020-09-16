@@ -1,9 +1,16 @@
 const SCORE_POINTS = 'SCORE_POINTS'
 
-function playerReducer(currentState = getInitialState(), {type}) {
+function playerReducer(currentState = getInitialState(), {type, payload}) {
     switch (type) {
         case SCORE_POINTS: {
-            return {...currentState, points: currentState.points + 1}
+            if (!payload) {
+                var newPoints = currentState.points + 1
+            } else {
+                const {points} = payload
+                var newPoints = currentState.points + points
+            }
+
+            return {...currentState, points: newPoints}
         }
         default:
             return currentState

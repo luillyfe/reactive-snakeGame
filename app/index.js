@@ -7,6 +7,8 @@ import {
     placeFood,
     isGameSttoped,
     reset,
+    placeSpecialFood,
+    shouldGrowBy2,
     connectStore
 } from './utils/connect.js'
 
@@ -44,6 +46,7 @@ function app() {
         doAction(moveSnake),
         doAction(shouldReverse),
         doAction(shouldGrow),
+        doAction(shouldGrowBy2),
     )
 
     const placingFood$ = irregularIntervals(5, 4, 10)
@@ -51,7 +54,12 @@ function app() {
             doAction(placeFood)
         )
 
-    const game$ = mergeAll(snakeMoves$, placingFood$)
+    const placingSpecialFood$ = irregularIntervals(10, 1, 5)
+        .pipe(
+            doAction(placeSpecialFood)
+        )
+
+    const game$ = mergeAll(snakeMoves$, placingFood$, placingSpecialFood$)
         .pipe(
             takeUntil(fireWhenSnakeHitsItself$)
         )
@@ -64,7 +72,7 @@ function app() {
             game$.subscribe(value => value)
         })
 
-    connectStore(({snake, food, tile, gameArea, score}) => {
+    connectStore(({snake, food, tile, gameArea, score, specialFood}) => {
         const {width, height} = gameArea
 
         scoreLabel.innerText = score
@@ -76,6 +84,7 @@ function app() {
 
         drawOnCanvas(snake, tile)
         drawOnCanvas(food, tile)
+        drawOnCanvas(specialFood, tile)
     })
 }
 
