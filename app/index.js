@@ -12,6 +12,7 @@ import {
 
 import {fromEvent, irregularIntervals, mergeAll} from './streams/Observable.js'
 import {map, filter, doAction, takeUntil} from './streams/operators.js'
+import {isKeyAllowed} from "./utils/index.js";
 
 app()
 
@@ -85,9 +86,4 @@ function draw(context) {
             context.fillRect(x, y, tile, tile)
         })
     }
-}
-
-function isKeyAllowed(key) {
-    const allowedKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']
-    return allowedKeys.includes(key)
 }

@@ -67,3 +67,8 @@ export function offsetGameArea(position, gameArea) {
     const {width, height} = gameArea
     return position.map(({x, y}) => ({x: x - Math.sqrt(width), y: y - Math.sqrt(height)}))
 }
+
+export function isKeyAllowed(key) {
+    const allowedKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight']
+    return allowedKeys.includes(key)
+}

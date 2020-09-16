@@ -122,6 +122,14 @@ export const snakeHittedItselfAction = store => () => {
 
 export const isGameSttopedAction = store => () => {
     const {game} = store.getState();
+
+    if (!game.currentDirection) {
+        store.dispatch({
+            type: REGISTER_DIRECTION,
+            payload: {direction: 'aksclajnsc'}
+        })
+    }
+
     return !game.currentDirection
 }
 
