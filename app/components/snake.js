@@ -1,4 +1,4 @@
-import {getFromLocalStorage} from "../LocalStorage.js";
+import {getFromLocalStorage} from "../utils/LocalStorage.js";
 import {isOutGameArea, offsetGameArea} from "../utils/index.js";
 
 const UPDATE_PATH = 'UPDATE_PATH'

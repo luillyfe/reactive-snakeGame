@@ -7,8 +7,25 @@ export function getRandomColor() {
 }
 
 export function areInTheSamePosition(snakePosition, foodPosition) {
-    return (snakePosition.x === foodPosition.x &&
-        snakePosition.y === foodPosition.y)
+    return intersects({
+            ...foodPosition,
+            w: 15,
+            h: 15
+        },
+        {
+            ...snakePosition,
+            w: 16,
+            h: 16
+        }
+    )
+}
+
+
+function intersects(rect, rect2) {
+    return !(rect.x + 1 > (rect2.x + rect2.w) ||
+        (rect.x + rect.w) < rect2.x ||
+        rect.y + 1 > (rect2.y + rect2.h) ||
+        (rect.y + rect.h) < rect2.y);
 }
 
 export function itHitsABoundary(snakePosition, gameArea) {

@@ -8,7 +8,7 @@ import {
     isGameSttoped,
     reset,
     connectStore
-} from './connect.js'
+} from './utils/connect.js'
 
 import {fromEvent, irregularIntervals, mergeAll} from './streams/Observable.js'
 import {map, filter, doAction, takeUntil} from './streams/operators.js'

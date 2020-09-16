@@ -1,5 +1,5 @@
-import {combineReducers, Store} from "./store/index.js";
-import {food, game, player, snake, tile} from "./components/index.js";
+import {combineReducers, Store} from "../store/index.js";
+import {food, game, player, snake, tile} from "../components/index.js";
 import {
     isDirectionAllowedAction,
     isGameSttopedAction,
@@ -9,7 +9,7 @@ import {
     shouldReverseAction,
     snakeHittedItselfAction,
     resetAction
-} from "./components/actions.js";
+} from "../components/actions.js";
 
 const appReducer = combineReducers({snake, food, tile, game, player})
 const rootReducer = (state, action) => {

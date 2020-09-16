@@ -16,7 +16,7 @@ import {
     isDirectionAllowed,
     getRandomColor
 } from "../utils/index.js";
-import {getFromLocalStorage, saveToLocalStorage} from "../LocalStorage.js";
+import {getFromLocalStorage, saveToLocalStorage} from "../utils/LocalStorage.js";
 
 
 export const moveSnakeAction = store => key => {
@@ -52,6 +52,8 @@ export const shouldGrowAction = store => () => {
         store.dispatch({
             type: SCORE_POINTS
         })
+
+        placeFoodAction(store)()
 
         store.dispatch({
             type: MOVE_SNAKE
