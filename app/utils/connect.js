@@ -10,7 +10,8 @@ import {
     snakeHittedItselfAction,
     resetAction,
     placeSpecialFoodAction,
-    shouldGrowBy2Action
+    shouldGrowBy2Action,
+    getCurrentDirectionAction
 } from "../components/actions.js";
 
 const appReducer = combineReducers({snake, food, tile, game, player})
@@ -48,6 +49,7 @@ export const isGameSttoped = isGameSttopedAction(store)
 export const reset = resetAction(store)
 export const placeSpecialFood = placeSpecialFoodAction(store)
 export const shouldGrowBy2 = shouldGrowBy2Action(store)
+export const getCurrentDirection = getCurrentDirectionAction(store)
 
 export {
     connectStore

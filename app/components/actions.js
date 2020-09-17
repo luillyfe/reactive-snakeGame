@@ -170,7 +170,7 @@ export const isGameSttopedAction = store => () => {
     if (!game.currentDirection) {
         store.dispatch({
             type: REGISTER_DIRECTION,
-            payload: {direction: 'aksclajnsc'}
+            payload: {direction: 'ArrowRight'}
         })
     }
 
@@ -187,4 +187,9 @@ export const resetAction = store => () => {
         })
     }
     store.dispatch({type: 'RESET'})
+}
+
+export const getCurrentDirectionAction = store => () => {
+    const {game} = store.getState();
+    return game.currentDirection ? game.currentDirection : 'ArrowRight'
 }

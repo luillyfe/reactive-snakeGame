@@ -9,10 +9,11 @@ import {
     reset,
     placeSpecialFood,
     shouldGrowBy2,
+    getCurrentDirection,
     connectStore
 } from './utils/connect.js'
 
-import {fromEvent, irregularIntervals, mergeAll} from './streams/Observable.js'
+import {fromEvent, irregularIntervals, mergeAll, interval} from './streams/Observable.js'
 import {map, filter, doAction, takeUntil} from './streams/operators.js'
 import {isKeyAllowed} from "./utils/index.js";
 
@@ -50,6 +51,15 @@ function app() {
         doAction(shouldGrowBy2),
     )
 
+    const movingSnake$ = interval(500).pipe(
+        map(getCurrentDirection),
+        filter(isDirectionAllowed),
+        doAction(moveSnake),
+        doAction(shouldReverse),
+        doAction(shouldGrow),
+        doAction(shouldGrowBy2),
+    )
+
     const placingFood$ = irregularIntervals(5, 4, 10)
         .pipe(
             doAction(placeFood)
@@ -60,7 +70,7 @@ function app() {
             doAction(placeSpecialFood)
         )
 
-    const game$ = mergeAll(snakeMoves$, placingFood$, placingSpecialFood$)
+    const game$ = mergeAll(snakeMoves$, placingFood$, placingSpecialFood$, movingSnake$)
         .pipe(
             takeUntil(fireWhenSnakeHitsItself$)
         )
