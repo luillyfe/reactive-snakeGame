@@ -19,12 +19,11 @@ function snakeReducer(currentState = getInitialState(), {type, payload}) {
         }
         case GROW_SNAKE: {
             const {size} = currentState
-            const {units} = payload
 
-            if (!units) {
+            if (!payload) {
                 var newSize = size + 1
             } else {
-                var newSize = size + units
+                var newSize = size + payload.units
             }
 
             return {

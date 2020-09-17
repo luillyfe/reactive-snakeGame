@@ -14,7 +14,8 @@ import {
     itHitsABoundary,
     getOpositeDirection,
     isDirectionAllowed,
-    getRandomColor
+    getRandomColor,
+    circleAndRectAreSamePosition
 } from "../utils/index.js";
 import {getFromLocalStorage, saveToLocalStorage} from "../utils/LocalStorage.js";
 
@@ -66,7 +67,7 @@ export const shouldGrowBy2Action = store => () => {
     const {snake, food} = store.getState()
     const special = food.special
 
-    const showSnakeGrowBy2 = areInTheSamePosition(
+    const showSnakeGrowBy2 = circleAndRectAreSamePosition(
         snake.position[snake.position.length - 1],
         special.position[special.position.length - 1])
 

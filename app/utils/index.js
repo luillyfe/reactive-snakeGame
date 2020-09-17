@@ -20,6 +20,20 @@ export function areInTheSamePosition(snakePosition, foodPosition) {
     )
 }
 
+export function circleAndRectAreSamePosition(snakePosition, foodPosition) {
+    return intersects({
+            x: foodPosition.x - 14,
+            y: foodPosition.y - 14,
+            w: 27,
+            h: 27
+        },
+        {
+            ...snakePosition,
+            w: 16,
+            h: 16
+        }
+    )
+}
 
 function intersects(rect, rect2) {
     return !(rect.x + 1 > (rect2.x + rect2.w) ||

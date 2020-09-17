@@ -24,6 +24,7 @@ function app() {
     const scoreLabel = document.getElementById('score')
     const context = canvas.getContext('2d')
     const drawOnCanvas = draw(context)
+    const drawArcOnCanvas = drawArc(context)
 
     const start$ = fromEvent(start, 'click')
     const arrowKeys$ = fromEvent(document, 'keydown')
@@ -84,7 +85,7 @@ function app() {
 
         drawOnCanvas(snake, tile)
         drawOnCanvas(food, tile)
-        drawOnCanvas(specialFood, tile)
+        drawArcOnCanvas(specialFood)
     })
 }
 
@@ -93,6 +94,18 @@ function draw(context) {
         context.fillStyle = color
         position.forEach(({x, y}) => {
             context.fillRect(x, y, tile, tile)
+        })
+    }
+}
+
+function drawArc(context) {
+    return ({position, color}) => {
+        context.fillStyle = color
+        position.forEach(({x, y}) => {
+            context.beginPath();
+            context.arc(x, y, 14, 0, Math.PI * 2, true);
+            context.fill()
+            context.stroke();
         })
     }
 }
